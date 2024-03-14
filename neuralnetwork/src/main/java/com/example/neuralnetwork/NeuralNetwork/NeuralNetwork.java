@@ -45,7 +45,7 @@ public class NeuralNetwork {
                 layers[i] = new Layer(numberOfOutputNodes, inputDataLength, Layer.LayerType.OutputLayer);
             }
             if (i != 0 && i != numberOfLayers - 1) {
-                layers[i] = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
+                layers[i] = new Layer(hiddenLayerWidth + 1, inputDataLength, Layer.LayerType.HiddenLayer);
             }
         }
 
@@ -55,54 +55,28 @@ public class NeuralNetwork {
             neurons = new Neuron[layer.getNumberOfNeurons()];
 
             switch (layer.layerType){
-                case InputLayer -> {
-                    setLayer(
+                case InputLayer -> setLayer(
+                        layer,
+                        neurons,
+                        edgesIn,
+                        hiddenLayerWidth,
+                        inputDataLength,
+                        Neuron.NeuronType.Input);
+                case HiddenLayer -> setLayer(
                             layer,
                             neurons,
-                            Layer.LayerType.InputLayer,
-                            edgesIn,
-                            hiddenLayerWidth,
-                            inputDataLength,
-                            Neuron.NeuronType.Input);}
-                case HiddenLayer -> {
-                    setLayer(
-                            layer,
-                            neurons,
-                            Layer.LayerType.HiddenLayer,
                             edgesIn,
                             hiddenLayerWidth,
                             inputDataLength,
                             Neuron.NeuronType.Hidden
-                    );}
-                case OutputLayer -> {
-                    setLayer(
+                    );
+                case OutputLayer -> setLayer(
                             layer,
                             neurons,
-                            Layer.LayerType.OutputLayer,
                             edgesIn,
-                            hiddenLayerWidth,
+                            0,
                             inputDataLength,
-                            Neuron.NeuronType.Output);}
-            }
-            edgesIn = layer.getNumberOfNeurons();
-        }
-    }
-
-    public void populateNetworkWithStartingWeights() {
-
-        int edgesIn = 0;
-        for(Layer layer : layers){
-            Neuron[] neurons = layer.getNeurons();
-            switch (layer.layerType){
-                case InputLayer -> {
-                    break;
-                }
-                case HiddenLayer -> {
-                    setInitialWeights(neurons,edgesIn);
-                }
-                case OutputLayer -> {
-                    setInitialWeights(neurons,edgesIn);
-                }
+                            Neuron.NeuronType.Output);
             }
             edgesIn = layer.getNumberOfNeurons();
         }
@@ -131,9 +105,9 @@ public class NeuralNetwork {
         }
         System.out.println("Predicted Value: "+ predictedValue);
         System.out.println("Expected Value: "+ expectedValue);
-        System.out.println();
         double error = 100*(Math.abs(predictedValue-expectedValue))/(0.5*(predictedValue + expectedValue));
         System.out.println("Error of: "+ error + " percent");
+        System.out.println();
     }
 
     public void propagateBackwards(){
@@ -144,7 +118,7 @@ public class NeuralNetwork {
         double[] dC_dW;
         double[][] dZ_dA;
         double[] cachedGradients;
-        double[] tempVector;
+        double[] tempGradients;
 
         List<Layer> layerList = Arrays.asList(layers);
         Collections.reverse(layerList);
@@ -152,7 +126,7 @@ public class NeuralNetwork {
         Layer previousLayer = null;
 
         for(Layer layer : layerList){
-            tempVector = StaticMathClass.makeZeroVector(inputDataLength);
+            tempGradients = StaticMathClass.makeZeroVector(inputDataLength);
             neurons = layer.getNeurons();
             for (Neuron neuron : neurons){
                 switch (neuron.neuronType) {
@@ -163,35 +137,55 @@ public class NeuralNetwork {
 
                         cachedGradients = StaticMathClass.vectorScalarMultiplication(dE_dA, dA_dZ);
                         cachedGradients = StaticMathClass.vectorMatrixMultiplication(cachedGradients, neuron.getWeights());
-                        tempVector = StaticMathClass.vectorAddition(cachedGradients, tempVector);
+                        tempGradients = StaticMathClass.vectorAddition(cachedGradients, tempGradients);
+
+
                         neuron.setWeights(StaticMathClass.getUpdatedWeights(
                                 neuron.getWeights(), dC_dW, learnRate
                         ));
                     }
-                    case Hidden -> {
-                        cachedGradients = previousLayer.getBias();
+                    case Hidden,Bias -> {
+                        if(layer.layerType == Layer.LayerType.OutputLayer)break;
+                        cachedGradients = previousLayer != null ? previousLayer.getBackPropCache() : null;
+
+                        dZ_dA = StaticMathClass.transposeMatrix(neuron.getWeights());
                         dA_dZ = StaticMathClass.dA_dZ_relu(neuron.getActivatedOutput());
                         dZ_dW = neuron.getInput();
-                        dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW);
+                        dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW, dZ_dA);
 
-                        tempVector = StaticMathClass.vectorAddition(cachedGradients, tempVector);
+                        tempGradients = StaticMathClass.vectorAddition(cachedGradients, tempGradients);
+
                         neuron.setWeights(StaticMathClass.getUpdatedWeights(
                                 neuron.getWeights(), dC_dW, learnRate
                         ));
                     }
                 }
             }
-            layer.setBias(tempVector);
+            layer.setBackPropCache(tempGradients);
             previousLayer = layer;
         }
         Collections.reverse(layerList);
     }
 
-    private void setLayer(Layer layer, Neuron[] neurons, Layer.LayerType layerType, int edgesIn, int edgesOut, int inputLength, Neuron.NeuronType neuronType){
+    private void setLayer(Layer layer, Neuron[] neurons, int edgesIn, int edgesOut, int inputLength, Neuron.NeuronType neuronType){
+
         for(int i = 0; i < neurons.length; i++){
-            neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType);
+            if(i != neurons.length-1
+                    || layer.layerType == Layer.LayerType.InputLayer
+                    || layer.layerType == Layer.LayerType.OutputLayer){
+                neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType);
+                neurons[i].setBias(StaticMathClass.generateRandomBias(edgesIn, edgesOut));
+                continue;
+            }
+            neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, Neuron.NeuronType.Bias);
         }
+
         layer.setNeurons(neurons);
+
+        switch (layer.layerType){
+            case InputLayer -> {}
+            case HiddenLayer, OutputLayer -> setInitialWeights(neurons,edgesIn);
+        }
     }
 
     private void setInitialWeights(Neuron[] neurons, int edgesIn){
@@ -221,5 +215,56 @@ public class NeuralNetwork {
             outputSum[counter] = neuron.getActivatedOutput();
         }
         predictedValue = StaticMathClass.GetPrediction(outputSum);
+    }
+
+    public void setInput(double[][] input) {
+        this.input = input;
+    }
+
+    public void setExpectedValue(double expectedValue) {
+        this.expectedValue = expectedValue;
+    }
+
+    public void addHiddenLayerFirst(){
+
+        Neuron[] neurons = new Neuron[hiddenLayerWidth];
+        Layer[] tempLayer = new Layer[numberOfLayers+1];
+        Layer newFirstLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
+        Layer newSecondLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
+
+        setLayer(
+                newFirstLayer,
+                neurons,
+                numberOfInputNeurons,
+                hiddenLayerWidth,
+                inputDataLength,
+                Neuron.NeuronType.Hidden);
+
+        setLayer(
+                newSecondLayer,
+                neurons,
+                hiddenLayerWidth,
+                hiddenLayerWidth,
+                inputDataLength,
+                Neuron.NeuronType.Hidden);
+
+
+        tempLayer[0] = layers[0];
+        tempLayer[1] = newFirstLayer;
+        tempLayer[2] = newSecondLayer;
+
+        for(int i = 2; i < layers.length; i++){
+            tempLayer[i+1] = layers[i];
+        }
+        layers = tempLayer;
+        System.out.println();
+    }
+
+    public void addLayerMiddle(){
+        //TODO: To be implemented
+    }
+
+    public void addLayerLast(){
+        //TODO: To be implemented
     }
 }

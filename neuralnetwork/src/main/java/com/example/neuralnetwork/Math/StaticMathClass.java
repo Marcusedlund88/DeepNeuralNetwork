@@ -4,6 +4,38 @@ import java.util.Random;
 
 public class StaticMathClass {
 
+    public static double[][] fillMatrixWithSameValue(int rows, int columns, int value){
+        double[][] temp = new double[rows][columns];
+        for (int i = 0; i < temp.length; i++){
+            for(int j = 0; j < temp[0].length; j++){
+                temp[i][j] = value;
+            }
+        }
+        return temp;
+    }
+
+    public static double generateRandomBias(int edgesIn, int edgesOut) {
+        Random random = new Random();
+
+        double bias = 0;
+        double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + edgesOut)));
+        double minValue = -range;
+        double maxValue = range;
+
+        bias =minValue + (maxValue - minValue) * random.nextDouble();
+
+
+        return bias;
+    }
+    public static double updateBias(double learnRate, double bias, double[] dC_dB){
+        double meanBias = 0;
+
+        for (int i = 0; i < dC_dB.length; i++) {
+            meanBias += dC_dB[i];
+        }
+
+        return bias - learnRate*(meanBias/dC_dB.length);
+    }
     public static double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
         double[] temp = new double[vector.length];
 
@@ -103,26 +135,23 @@ public class StaticMathClass {
         return dC_dW;
     }
 
-    public static double[] dC_dW_hidden(double[] dC_dW_prev, double[] dA_dZ, double[][] dZ_dW){
+    public static double[] dC_dW_hidden(double[] dC_dW_prev, double[] dA_dZ, double[][] dZ_dW, double[][] dZ_dA){
         double[] dC_dW = new double[dZ_dW.length];
 
         for(int i = 0; i < dZ_dW.length; i++){
             for (int j = 0; j < dZ_dW[0].length; j++) {
-                dC_dW[i] = dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i];
+                dC_dW[i] = dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i] * dZ_dA[i][j];
             }
         }
         return dC_dW;
     }
-    public static double[] weightedSumAndBias(double[][] input, double[][] weights, double bias){
+    public static double[] weightedSum(double[][] input, double[][] weights){
         double[] weightedSum = new double[input.length];
 
         for(int i = 0; i < input.length; i++){
             for(int j = 0; j < input[0].length; j++){
                 weightedSum[i] += input[i][j] * weights[j][i];
             }
-        }
-        for(int i = 0; i < weightedSum.length; i++){
-            weightedSum[i] += bias;
         }
        return weightedSum;
     }

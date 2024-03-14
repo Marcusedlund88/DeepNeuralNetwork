@@ -16,7 +16,7 @@ public class Layer {
     private double[] bias;
     private double[][] layerOutput;
     private double [][] activatedLayerOutput;
-    private double[][] backPropCache;
+    private double[] backPropCache;
     private double[][] dZ_dA;
 
     public Layer(int numberOfNodes, int dataLength, LayerType layerType){
@@ -26,7 +26,7 @@ public class Layer {
         layerOutput = new double[numberOfNodes][dataLength];
         activatedLayerOutput = new double[numberOfNodes][dataLength];
         this.layerType = layerType;
-        this.backPropCache = new double[numberOfNodes][dataLength];
+        this.backPropCache = new double[dataLength];
         this.dZ_dA = new double[numberOfNodes][dataLength];
     }
 
@@ -42,12 +42,20 @@ public class Layer {
         this.neurons = neurons;
     }
 
-    public double[] getBias() {
+    public double[] getBiasGradients() {
         return bias;
     }
 
-    public void setBias(double[] bias) {
+    public void setBiasGradients(double[] bias) {
         this.bias = bias;
+    }
+
+    public double[] getBackPropCache() {
+        return backPropCache;
+    }
+
+    public void setBackPropCache(double[] backPropCache) {
+        this.backPropCache = backPropCache;
     }
 
     public double[][] getActivatedLayerOutput() {
