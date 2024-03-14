@@ -7,7 +7,8 @@ public class Neuron {
     protected enum NeuronType{
         Input,
         Hidden,
-        Output
+        Output,
+        Bias,
     }
 
     protected enum NeuronStatus{
@@ -43,12 +44,17 @@ public class Neuron {
         switch (neuronType){
             case Input -> setActivatedOutput(input[0]);
             case Hidden -> {
-                setWeightedOutput(StaticMathClass.weightedSumAndBias(input, getWeights(), getBias()));
+                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
                 setActivatedOutput(StaticMathClass.ReluActivateNeuron(getWeightedOutput()));
             }
             case Output -> {
-                setWeightedOutput(StaticMathClass.weightedSumAndBias(input, getWeights(),getBias()));
+                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
                 setActivatedOutput(StaticMathClass.outputSigmoidActivation(getWeightedOutput()));
+            }
+            case Bias -> {
+                input = StaticMathClass.fillMatrixWithSameValue(input.length, input[0].length, 1);
+                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
+                setActivatedOutput(getWeightedOutput());
             }
         }
     }
