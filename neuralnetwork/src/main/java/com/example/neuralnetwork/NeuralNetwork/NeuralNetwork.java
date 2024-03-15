@@ -139,6 +139,7 @@ public class NeuralNetwork {
         double[][] dZ_dA;
         double[] cachedGradients;
         double[] tempGradients;
+        double[] hiddenTempGradients;
 
         List<Layer> layerList = Arrays.asList(layers);
         Collections.reverse(layerList);
@@ -147,6 +148,7 @@ public class NeuralNetwork {
 
         for(Layer layer : layerList){
             tempGradients = StaticMathClass.makeZeroVector(inputDataLength);
+            hiddenTempGradients = StaticMathClass.makeZeroVector(inputDataLength);
             neurons = layer.getNeurons();
             for (Neuron neuron : neurons){
                 switch (neuron.neuronType) {
@@ -158,7 +160,6 @@ public class NeuralNetwork {
                         cachedGradients = StaticMathClass.vectorScalarMultiplication(dE_dA, dA_dZ);
                         cachedGradients = StaticMathClass.vectorMatrixMultiplication(cachedGradients, neuron.getWeights());
                         tempGradients = StaticMathClass.vectorAddition(cachedGradients, tempGradients);
-
 
                         neuron.setWeights(StaticMathClass.getUpdatedWeights(
                                 neuron.getWeights(), dC_dW, learnRate
@@ -173,7 +174,9 @@ public class NeuralNetwork {
                         dZ_dW = neuron.getInput();
                         dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW, dZ_dA);
 
-                        tempGradients = StaticMathClass.vectorAddition(cachedGradients, tempGradients);
+                        tempGradients = StaticMathClass.vectorMatrixMultiplication(dA_dZ, dZ_dA);
+                        tempGradients = StaticMathClass.vectorMultiplication(cachedGradients, tempGradients);
+                        hiddenTempGradients = StaticMathClass.vectorAddition(hiddenTempGradients,tempGradients);
 
                         neuron.setWeights(StaticMathClass.getUpdatedWeights(
                                 neuron.getWeights(), dC_dW, learnRate
@@ -181,7 +184,10 @@ public class NeuralNetwork {
                     }
                 }
             }
-            layer.setBackPropCache(tempGradients);
+            switch (layer.layerType){
+                case OutputLayer -> layer.setBackPropCache(tempGradients);
+                case HiddenLayer -> layer.setBackPropCache(hiddenTempGradients);
+            }
             previousLayer = layer;
         }
         Collections.reverse(layerList);
