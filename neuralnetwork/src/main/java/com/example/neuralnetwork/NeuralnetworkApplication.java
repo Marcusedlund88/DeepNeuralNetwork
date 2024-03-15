@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.*;
 
 @SpringBootApplication
-public class NeuralnetworkApplication {
+public class NeuralNetworkApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NeuralnetworkApplication.class, args);
+        SpringApplication.run(NeuralNetworkApplication.class, args);
 
         double[][] initialData1 =
                 {{1},{1}};
@@ -34,8 +34,8 @@ public class NeuralnetworkApplication {
         List<TrainingObject> trainingObjects = new ArrayList<>();
         trainingObjects.add(trainingObject1);
         trainingObjects.add(trainingObject2);
-        //trainingObjects.add(trainingObject3);
-        //trainingObjects.add(trainingObject4);
+        trainingObjects.add(trainingObject3);
+        trainingObjects.add(trainingObject4);
 
         double expected = 1;
 
