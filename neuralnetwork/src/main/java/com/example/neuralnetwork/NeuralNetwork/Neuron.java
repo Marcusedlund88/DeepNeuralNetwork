@@ -52,8 +52,7 @@ public class Neuron {
                 setActivatedOutput(StaticMathClass.outputSigmoidActivation(getWeightedOutput()));
             }
             case Bias -> {
-                input = StaticMathClass.fillMatrixWithSameValue(input.length, input[0].length, 1);
-                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
+                setWeightedOutput(weights[0]);
                 setActivatedOutput(getWeightedOutput());
             }
         }

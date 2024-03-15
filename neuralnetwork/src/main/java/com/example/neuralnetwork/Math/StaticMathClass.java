@@ -4,6 +4,14 @@ import java.util.Random;
 
 public class StaticMathClass {
 
+    public static double[] fillVectorWithSameValue(int columns, int value){
+        double[] temp = new double[columns];
+        for (int i = 0; i < temp.length; i++){
+            temp[i] = value;
+        }
+        return temp;
+    }
+
     public static double[][] fillMatrixWithSameValue(int rows, int columns, int value){
         double[][] temp = new double[rows][columns];
         for (int i = 0; i < temp.length; i++){
@@ -135,12 +143,12 @@ public class StaticMathClass {
         return dC_dW;
     }
 
-    public static double[] dC_dW_hidden(double[] dC_dW_prev, double[] dA_dZ, double[][] dZ_dW, double[][] dZ_dA){
+    public static double[] dC_dW_hidden(double[] dC_dW_prev, double[] dA_dZ, double[][] dZ_dW){
         double[] dC_dW = new double[dZ_dW.length];
 
         for(int i = 0; i < dZ_dW.length; i++){
             for (int j = 0; j < dZ_dW[0].length; j++) {
-                dC_dW[i] = dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i] * dZ_dA[i][j];
+                dC_dW[i] = dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i];
             }
         }
         return dC_dW;

@@ -172,7 +172,7 @@ public class NeuralNetwork {
                         dZ_dA = StaticMathClass.transposeMatrix(neuron.getWeights());
                         dA_dZ = StaticMathClass.dA_dZ_relu(neuron.getActivatedOutput());
                         dZ_dW = neuron.getInput();
-                        dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW, dZ_dA);
+                        dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW);
 
                         tempGradients = StaticMathClass.vectorMatrixMultiplication(dA_dZ, dZ_dA);
                         tempGradients = StaticMathClass.vectorMultiplication(cachedGradients, tempGradients);
