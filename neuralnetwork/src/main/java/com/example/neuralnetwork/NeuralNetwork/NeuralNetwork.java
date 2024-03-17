@@ -33,6 +33,16 @@ public class NeuralNetwork {
         this.numberOfInputNeurons = input.length;
     }
 
+    /**
+    * Creates an empty neural network with the specified number of layers, input and output neurons, and layer widths.
+    * Initializes each layer with the appropriate type (InputLayer, HiddenLayer, OutputLayer) and sets up the neurons accordingly.
+    * 
+    * @param numberOfLayers The total number of layers in the network.
+    * @param numberOfInputNeurons The number of neurons in the input layer.
+    * @param numberOfOutputNodes The number of neurons in the output layer.
+    * @param hiddenLayerWidth The width of each hidden layer (excluding bias neuron).
+    * @param inputDataLength The length of the input data.
+    */
     public void createEmptyNetwork() {
 
         layers = new Layer[numberOfLayers];
@@ -82,6 +92,11 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+    * Propagates input forward through the neural network layers,
+    * activating neurons and computing predicted values.
+    * Prints predicted value, expected value, and error percentage.
+    */
     public void propagateForward() {
         double[][] layerInput = StaticMathClass.transposeMatrix(input);
         for (Layer layer : layers){
@@ -110,6 +125,11 @@ public class NeuralNetwork {
         System.out.println();
     }
 
+    /**
+    * Propagates error backward through the neural network layers,
+    * updating weights based on gradient descent.
+    * Calculates gradients for weights using backpropagation.
+    */
     public void propagateBackwards(){
         dE_dA = StaticMathClass.dC_dA(predictedValue, expectedValue);
 
@@ -167,6 +187,15 @@ public class NeuralNetwork {
         Collections.reverse(layerList);
     }
 
+    /**
+    * Initializes neurons for the layer and sets initial weights.
+    * For each neuron, creates a new instance with specified parameters,
+    * sets bias, and sets initial weights.
+    * If it's not the last neuron or the layer is an input or output layer,
+    * creates a regular neuron; otherwise, creates a bias neuron.
+    * Sets the initialized neurons to the layer.
+    * If the layer is a hidden or output layer, sets initial weights for neurons.
+    */
     private void setLayer(Layer layer, Neuron[] neurons, int edgesIn, int edgesOut, int inputLength, Neuron.NeuronType neuronType){
 
         for(int i = 0; i < neurons.length; i++){
@@ -188,6 +217,14 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+    * Sets initial weights for neurons using Xavier/Glorot initialization.
+    * For each neuron in the given array, generates starting weights
+    * using Xavier/Glorot initialization and sets them to the neuron.
+    * 
+    * @param neurons The array of neurons for which initial weights are set.
+    * @param edgesIn The number of incoming edges to each neuron.
+    */
     private void setInitialWeights(Neuron[] neurons, int edgesIn){
         for(Neuron neuron : neurons){
             neuron.setWeights(
@@ -197,6 +234,16 @@ public class NeuralNetwork {
                             ));}
     }
 
+    /**
+    * Activates neurons in the given layer using the provided input.
+    * For each neuron in the layer, activates it using the input,
+    * retrieves the activated output, and stores it in the activatedLayerOutput matrix.
+    * Sets the activatedLayerOutput matrix to the layer.
+    * 
+    * @param layer The layer in which neurons are activated.
+    * @param neurons The array of neurons to be activated.
+    * @param input The input matrix used for activation.
+    */
     private void activateNeurons(Layer layer, Neuron[] neurons, double[][] input){
         double[][] activatedLayerOutput = new double[neurons.length][inputDataLength];
         int counter = 0;
@@ -208,6 +255,9 @@ public class NeuralNetwork {
         layer.setActivatedLayerOutput(StaticMathClass.transposeMatrix(activatedLayerOutput));
     }
 
+    /**
+    Get the predicted value produced by the output layer.
+    */
     private void getPredictedValue(Neuron[] neurons){
         double[][] outputSum = new double[numberOfOutputNodes][inputDataLength];
         int counter = 0;
@@ -225,6 +275,12 @@ public class NeuralNetwork {
         this.expectedValue = expectedValue;
     }
 
+    /**
+    * Inserts two hidden layers into the neural network architecture.
+    * Creates new layers with specified width and type as hidden layers.
+    * Sets neurons for each new layer using the provided parameters.
+    * Updates the layers array to include the newly inserted layers.
+    */
     public void addHiddenLayerFirst(){
 
         Neuron[] neurons = new Neuron[hiddenLayerWidth];
