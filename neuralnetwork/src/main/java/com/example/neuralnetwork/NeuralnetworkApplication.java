@@ -1,6 +1,5 @@
 package com.example.neuralnetwork;
 
-import com.example.neuralnetwork.Math.StaticMathClass;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import com.example.neuralnetwork.Training.TrainingObject;
 import org.springframework.boot.SpringApplication;

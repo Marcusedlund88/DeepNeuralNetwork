@@ -59,6 +59,7 @@ public class NeuralNetwork {
             }
         }
 
+        Layer previousLayer = null;
         Neuron[] neurons;
         int edgesIn = 0;
         for (Layer layer : layers){
@@ -67,6 +68,7 @@ public class NeuralNetwork {
             switch (layer.layerType){
                 case InputLayer -> setLayer(
                         layer,
+                        previousLayer,
                         neurons,
                         edgesIn,
                         hiddenLayerWidth,
@@ -74,6 +76,7 @@ public class NeuralNetwork {
                         Neuron.NeuronType.Input);
                 case HiddenLayer -> setLayer(
                             layer,
+                            previousLayer,
                             neurons,
                             edgesIn,
                             hiddenLayerWidth,
@@ -82,12 +85,14 @@ public class NeuralNetwork {
                     );
                 case OutputLayer -> setLayer(
                             layer,
+                            previousLayer,
                             neurons,
                             edgesIn,
                             0,
                             inputDataLength,
                             Neuron.NeuronType.Output);
             }
+            previousLayer = layer;
             edgesIn = layer.getNumberOfNeurons();
         }
     }
@@ -206,8 +211,8 @@ public class NeuralNetwork {
 
         for(int i = 0; i < neurons.length; i++){
             if(i != neurons.length-1
-                    || layer.layerType == Layer.LayerType.InputLayer
-                    || layer.layerType == Layer.LayerType.OutputLayer){
+                    || currentLayer.layerType == Layer.LayerType.InputLayer
+                    || currentLayer.layerType == Layer.LayerType.OutputLayer){
                 neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType);
                 neurons[i].setBias(StaticMathClass.generateRandomBias(edgesIn, edgesOut));
                 continue;
@@ -215,11 +220,15 @@ public class NeuralNetwork {
             neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, Neuron.NeuronType.Bias);
         }
 
-        layer.setNeurons(neurons);
+        currentLayer.setNeurons(neurons);
 
-        switch (layer.layerType){
+        switch (currentLayer.layerType){
             case InputLayer -> {}
-            case HiddenLayer, OutputLayer -> setInitialWeights(neurons,edgesIn);
+            case HiddenLayer, OutputLayer -> {
+                currentLayer.setPreviousLayer(previousLayer);
+                previousLayer.setNextLayer(currentLayer);
+                setInitialWeights(neurons,edgesIn);
+            }
         }
     }
 
@@ -293,9 +302,11 @@ public class NeuralNetwork {
         Layer[] tempLayer = new Layer[numberOfLayers+1];
         Layer newFirstLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
         Layer newSecondLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
+        Layer inputLayer = layers[0];
 
         setLayer(
                 newFirstLayer,
+                inputLayer,
                 neurons,
                 numberOfInputNeurons,
                 hiddenLayerWidth,
@@ -304,6 +315,7 @@ public class NeuralNetwork {
 
         setLayer(
                 newSecondLayer,
+                newFirstLayer,
                 neurons,
                 hiddenLayerWidth,
                 hiddenLayerWidth,
@@ -314,6 +326,7 @@ public class NeuralNetwork {
         tempLayer[0] = layers[0];
         tempLayer[1] = newFirstLayer;
         tempLayer[2] = newSecondLayer;
+        layers[3].setPreviousLayer(newSecondLayer);
 
         for(int i = 2; i < layers.length; i++){
             tempLayer[i+1] = layers[i];
