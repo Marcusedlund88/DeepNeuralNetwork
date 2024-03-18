@@ -18,6 +18,8 @@ public class Layer {
     private double [][] activatedLayerOutput;
     private double[] backPropCache;
     private double[][] dZ_dA;
+    private Layer previousLayer;
+    private Layer nextLayer;
 
     public Layer(int numberOfNodes, int dataLength, LayerType layerType){
         this.numberOfNeurons = numberOfNodes;
@@ -70,4 +72,19 @@ public class Layer {
         this.layerInput = StaticMathClass.transposeMatrix(input);
     }
 
+    public Layer getPreviousLayer() {
+        return previousLayer;
+    }
+
+    public void setPreviousLayer(Layer previousLayer) {
+        this.previousLayer = previousLayer;
+    }
+
+    public Layer getNextLayer() {
+        return nextLayer;
+    }
+
+    public void setNextLayer(Layer nextLayer) {
+        this.nextLayer = nextLayer;
+    }
 }
