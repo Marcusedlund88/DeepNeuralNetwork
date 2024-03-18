@@ -36,12 +36,6 @@ public class NeuralNetwork {
     /**
     * Creates an empty neural network with the specified number of layers, input and output neurons, and layer widths.
     * Initializes each layer with the appropriate type (InputLayer, HiddenLayer, OutputLayer) and sets up the neurons accordingly.
-    * 
-    * @param numberOfLayers The total number of layers in the network.
-    * @param numberOfInputNeurons The number of neurons in the input layer.
-    * @param numberOfOutputNodes The number of neurons in the output layer.
-    * @param hiddenLayerWidth The width of each hidden layer (excluding bias neuron).
-    * @param inputDataLength The length of the input data.
     */
     public void createEmptyNetwork() {
 
@@ -207,7 +201,7 @@ public class NeuralNetwork {
     * Sets the initialized neurons to the layer.
     * If the layer is a hidden or output layer, sets initial weights for neurons.
     */
-    private void setLayer(Layer layer, Neuron[] neurons, int edgesIn, int edgesOut, int inputLength, Neuron.NeuronType neuronType){
+    private void setLayer(Layer currentLayer, Layer previousLayer, Neuron[] neurons, int edgesIn, int edgesOut, int inputLength, Neuron.NeuronType neuronType){
 
         for(int i = 0; i < neurons.length; i++){
             if(i != neurons.length-1
