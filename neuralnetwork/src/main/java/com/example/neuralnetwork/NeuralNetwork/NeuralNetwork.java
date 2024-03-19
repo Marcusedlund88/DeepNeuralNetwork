@@ -188,6 +188,7 @@ public class NeuralNetwork {
                     }
                 }
             }
+
         }
         Collections.reverse(layerList);
     }
@@ -270,7 +271,7 @@ public class NeuralNetwork {
                 updatedWeights[i][j] = weights[i][j] - learnRate*dC_dW[j];
             }
         }
-        neuron.setWeights(weights);
+        neuron.setWeights(updatedWeights);
     }
 
     /**

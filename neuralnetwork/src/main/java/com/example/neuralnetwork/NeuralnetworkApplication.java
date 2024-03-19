@@ -39,10 +39,10 @@ public class NeuralNetworkApplication {
 
         double expected = 1;
 
-        NeuralNetwork n = new NeuralNetwork(initialData1, 4, 20, 1, 1, 0.01);
+        NeuralNetwork n = new NeuralNetwork(initialData1, 4, 20, 1, 1, 0.001);
             n.createEmptyNetwork();
 
-            for(int i = 0; i < 20; i++){
+            for(int i = 0; i < 2000; i++){
                 Collections.shuffle(trainingObjects);
                 for(TrainingObject to : trainingObjects){
                     n.setExpectedValue(to.expectedValue);
