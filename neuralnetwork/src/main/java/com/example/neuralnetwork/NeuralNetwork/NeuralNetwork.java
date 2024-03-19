@@ -5,6 +5,7 @@ import com.example.neuralnetwork.Math.StaticMathClass;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class NeuralNetwork {
 
@@ -136,58 +137,57 @@ public class NeuralNetwork {
         double[][] dZ_dW;
         double[] dC_dW;
         double[][] dZ_dA;
-        double[] cachedGradients;
+        double[] cachedGradients = null;
         double[] tempGradients;
         double[] hiddenTempGradients;
 
         List<Layer> layerList = Arrays.asList(layers);
         Collections.reverse(layerList);
         Neuron[] neurons;
-        Layer previousLayer = null;
+        Layer nextLayer = null;
 
         for(Layer layer : layerList){
-            tempGradients = StaticMathClass.makeZeroVector(inputDataLength);
-            hiddenTempGradients = StaticMathClass.makeZeroVector(inputDataLength);
+            tempGradients = null;
             neurons = layer.getNeurons();
+            nextLayer = layer.getNextLayer();
             for (Neuron neuron : neurons){
                 switch (neuron.neuronType) {
-                    case Output -> {
-                        dA_dZ = StaticMathClass.dA_dZ_sigmoid(neuron.getActivatedOutput());
+                    case Output, Hidden, Bias -> {
+                        if(layer.layerType == Layer.LayerType.OutputLayer && neuron.neuronType == Neuron.NeuronType.Bias)break;
+
+                        cachedGradients = nextLayer != null ? nextLayer.getBackPropCache() : layer.getBackPropCache();
+
+                        dA_dZ = getActivationGradient(neuron);
+                        dZ_dA = neuron.getWeights();
                         dZ_dW = neuron.getInput();
-                        dC_dW = StaticMathClass.dC_dW_Output(dE_dA, dA_dZ, dZ_dW);
+                        dC_dW = getLossWeightGradient(neuron, dE_dA, dA_dZ, dZ_dW, cachedGradients);
 
-                        cachedGradients = StaticMathClass.vectorScalarMultiplication(dE_dA, dA_dZ);
-                        cachedGradients = StaticMathClass.vectorMatrixMultiplication(cachedGradients, neuron.getWeights());
-                        tempGradients = StaticMathClass.vectorAddition(cachedGradients, tempGradients);
+                        switch (neuron.neuronType){
+                            case Output -> {
+                                tempGradients = StaticMathClass.vectorScalarMultiplication(dE_dA,dA_dZ);
+                                tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
-                        neuron.setWeights(StaticMathClass.getUpdatedWeights(
-                                neuron.getWeights(), dC_dW, learnRate
-                        ));
-                    }
-                    case Hidden,Bias -> {
-                        if(layer.layerType == Layer.LayerType.OutputLayer)break;
-                        cachedGradients = previousLayer != null ? previousLayer.getBackPropCache() : null;
+                                if(cachedGradients == null){
+                                    layer.setBackPropCache(tempGradients);
+                                }
+                                else{
+                                    cachedGradients = StaticMathClass.vectorAddition(tempGradients,cachedGradients);
+                                    layer.setBackPropCache(cachedGradients);
+                                }
+                            }
+                            case Hidden, Bias ->{
+                                tempGradients = StaticMathClass.vectorMultiplication(cachedGradients, dA_dZ);
+                                tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
-                        dZ_dA = StaticMathClass.transposeMatrix(neuron.getWeights());
-                        dA_dZ = StaticMathClass.dA_dZ_relu(neuron.getActivatedOutput());
-                        dZ_dW = neuron.getInput();
-                        dC_dW = StaticMathClass.dC_dW_hidden(cachedGradients, dA_dZ, dZ_dW);
+                                cachedGradients = StaticMathClass.vectorAddition(tempGradients,cachedGradients);
+                                layer.setBackPropCache(cachedGradients);
+                            }
+                        }
 
-                        tempGradients = StaticMathClass.vectorMatrixMultiplication(dA_dZ, dZ_dA);
-                        tempGradients = StaticMathClass.vectorMultiplication(cachedGradients, tempGradients);
-                        hiddenTempGradients = StaticMathClass.vectorAddition(hiddenTempGradients,tempGradients);
-
-                        neuron.setWeights(StaticMathClass.getUpdatedWeights(
-                                neuron.getWeights(), dC_dW, learnRate
-                        ));
+                        updateWeights(neuron, dC_dW, learnRate);
                     }
                 }
             }
-            switch (layer.layerType){
-                case OutputLayer -> layer.setBackPropCache(tempGradients);
-                case HiddenLayer -> layer.setBackPropCache(hiddenTempGradients);
-            }
-            previousLayer = layer;
         }
         Collections.reverse(layerList);
     }
@@ -234,13 +234,43 @@ public class NeuralNetwork {
     * @param neurons The array of neurons for which initial weights are set.
     * @param edgesIn The number of incoming edges to each neuron.
     */
-    private void setInitialWeights(Neuron[] neurons, int edgesIn){
-        for(Neuron neuron : neurons){
-            neuron.setWeights(
-                    StaticMathClass
-                            .generateStartingWeights(
-                                    edgesIn, numberOfOutputNodes, inputDataLength
-                            ));}
+    private void setInitialWeights(Neuron[] neurons, int edgesIn) {
+        for (Neuron neuron : neurons) {
+            Random random = new Random();
+
+            double[][] generatedWeights = new double[edgesIn][inputDataLength];
+            for (int i = 0; i < edgesIn; i++) {
+                for (int j = 0; j < inputDataLength; j++) {
+                    double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + numberOfOutputNodes)));
+                    double minValue = -range;
+                    double maxValue = range;
+
+                    generatedWeights[i][j] = minValue + (maxValue - minValue) * random.nextDouble();
+                }
+            }
+
+            neuron.setWeights(generatedWeights);
+        }
+    }
+
+    /**
+     * Sets updated weights for neurons using w_new = w_old - dc/dw * learn rate (alpha).
+     * Iterates across the empty updatedWeights array and sets updated value.
+     *
+     * @param neuron Current neuron.
+     * @param dC_dW Loss/weight gradient.
+     * @param learnRate Current learn rate (alpha)
+     */
+    private void updateWeights(Neuron neuron, double[] dC_dW, double learnRate){
+        double[][] weights = neuron.getWeights();
+        double[][] updatedWeights = new double[weights.length][weights[0].length];
+
+        for (int i = 0; i < updatedWeights.length; i++) {
+            for (int j = 0; j < updatedWeights[0].length; j++) {
+                updatedWeights[i][j] = weights[i][j] - learnRate*dC_dW[j];
+            }
+        }
+        neuron.setWeights(weights);
     }
 
     /**
@@ -262,6 +292,76 @@ public class NeuralNetwork {
             counter++;
         }
         layer.setActivatedLayerOutput(StaticMathClass.transposeMatrix(activatedLayerOutput));
+    }
+
+    /**
+     * Returns the gradient for the activation dA/dZ for given neuron.
+     * Handles the neuron based on its type, Output/Hidden/Bias,
+     * and returns the gradient based on its activation function.
+     *
+     * @param neuron Current neuron.
+     */
+    private double[] getActivationGradient(Neuron neuron){
+        double[] activatedOutput = neuron.getActivatedOutput();
+        double[] activationGradient = null;
+
+        switch(neuron.neuronType){
+            case Output -> {
+
+                activationGradient = new double[activatedOutput.length];
+
+                for (int i = 0; i < activatedOutput.length; i++) {
+                    activationGradient[i] = activatedOutput[i]*(1-activatedOutput[i]);
+                }
+            }
+
+            case Hidden,Bias -> {
+
+                activationGradient = new double[activatedOutput.length];
+
+                for (int i = 0; i < activationGradient.length; i++) {
+                    if(activatedOutput[i] <= 0){
+                        activationGradient[i] = 0;
+                        continue;
+                    }
+                    activationGradient[i] = 1;
+                }
+            }
+        }
+        return activationGradient;
+    }
+
+    /**
+     * Returns the gradient for the loss with respect to the weights dC/dW for given neuron.
+     * Handles the neuron based on its type, Output/Hidden/Bias,
+     * and returns the gradient based on its activation function.
+     *
+     * @param neuron Current neuron.
+     */
+    private double[] getLossWeightGradient(Neuron neuron, double dE_dA, double[] dA_dZ, double[][] dZ_dW, double[] dC_dW_prev){
+        double[] dC_dW = new double[dZ_dW.length];
+
+        switch (neuron.neuronType){
+            case Output -> {
+
+                for(int i = 0; i < dZ_dW.length; i++){
+                    for (int j = 0; j < dZ_dW[0].length; j++) {
+                        dC_dW[i] += dA_dZ[i] * dZ_dW[i][j] * dE_dA;
+                    }
+                }
+                return dC_dW;
+            }
+            case Hidden, Bias -> {
+
+                for(int i = 0; i < dZ_dW.length; i++){
+                    for (int j = 0; j < dZ_dW[0].length; j++) {
+                        dC_dW[i] += dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i];
+                    }
+                }
+                return dC_dW;
+            }
+        }
+        return dC_dW;
     }
 
     /**

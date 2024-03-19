@@ -45,11 +45,11 @@ public class StaticMathClass {
         return bias - learnRate*(meanBias/dC_dB.length);
     }
     public static double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
-        double[] temp = new double[vector.length];
+        double[] temp = new double[matrix.length];
 
         for (int i = 0; i < temp.length; i++){
             for(int j = 0; j < matrix[0].length; j++){
-                temp[i] += vector[i]*matrix[i][j];
+                temp[i] += vector[j]*matrix[i][j];
             }
         }
         return temp;
@@ -67,12 +67,11 @@ public class StaticMathClass {
 
         double outPutVector[] = new double[vector1.length];
 
-        if(vector1.length != vector2.length){
-            System.out.println("Vector dimension missmatch");
-            return null;
-        }
         for(int i = 0; i < vector1.length; i++){
-            outPutVector[i] = vector1[i] * vector2[i];
+            for (int j = 0; j < vector2.length; j++) {
+                outPutVector[i] = vector1[i] * vector2[j];
+            }
+
         }
         return outPutVector;
     }
@@ -132,27 +131,7 @@ public class StaticMathClass {
         }
         return sum;
     }
-    public static double[] dC_dW_Output(double dC_dA, double[] dA_dZ, double[][] dZ_dW){
-        double[] dC_dW = new double[dZ_dW.length];
 
-        for(int i = 0; i < dZ_dW.length; i++){
-            for (int j = 0; j < dZ_dW[0].length; j++) {
-                dC_dW[i] += dA_dZ[i] * dZ_dW[i][j] * dC_dA;
-            }
-        }
-        return dC_dW;
-    }
-
-    public static double[] dC_dW_hidden(double[] dC_dW_prev, double[] dA_dZ, double[][] dZ_dW){
-        double[] dC_dW = new double[dZ_dW.length];
-
-        for(int i = 0; i < dZ_dW.length; i++){
-            for (int j = 0; j < dZ_dW[0].length; j++) {
-                dC_dW[i] = dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i];
-            }
-        }
-        return dC_dW;
-    }
     public static double[] weightedSum(double[][] input, double[][] weights){
         double[] weightedSum = new double[input.length];
 
@@ -176,23 +155,6 @@ public class StaticMathClass {
         return activatedOutput;
     }
 
-    public static double[][] generateStartingWeights(int edgesIn, int edgesOut, int inputLength){
-
-        Random random = new Random();
-
-        double[][] generatedWeights = new double[edgesIn][inputLength];
-        for (int i = 0; i < edgesIn; i++) {
-            for (int j = 0; j < inputLength; j++) {
-                double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + edgesOut)));
-                double minValue = -range;
-                double maxValue = range;
-
-                generatedWeights[i][j] = minValue + (maxValue - minValue) * random.nextDouble();
-            }
-        }
-        return generatedWeights;
-    }
-
     public static double[] outputSigmoidActivation(double[] vector){
         double[] activatedVector = new double[vector.length];
 
@@ -206,16 +168,6 @@ public class StaticMathClass {
     public static double dC_dA(double predictedValue, double expectedValue){
         double dC_dA = (predictedValue - expectedValue);
         return dC_dA;
-    }
-
-    public static double[] dA_dZ_sigmoid(double[] sigmoidVector){
-
-        double[] sigmoidGradientVector = new double[sigmoidVector.length];
-
-        for (int i = 0; i < sigmoidVector.length; i++) {
-            sigmoidGradientVector[i] = sigmoidVector[i]*(1-sigmoidVector[i]);
-        }
-        return sigmoidGradientVector;
     }
 
     public static double[] dA_dZ_relu(double[] reluVector){
@@ -232,22 +184,12 @@ public class StaticMathClass {
         return reluGradientVector;
     }
 
-    public static double[][] getUpdatedWeights(double[][] weights, double[] dC_dW, double learnRate){
-        double[][] updatedWeights = new double[weights.length][weights[0].length];
-
-        for (int i = 0; i < updatedWeights.length; i++) {
-            for (int j = 0; j < updatedWeights[0].length; j++) {
-                updatedWeights[i][j] = weights[i][j] - learnRate*dC_dW[j];
-             }
-        }
-        return updatedWeights;
-    }
-
     public static double[] vectorAddition(double[] vector1, double[] vector2){
         double[] sum = new double[vector1.length];
 
         for (int i = 0; i < sum.length; i++) {
-            sum[i] = vector1[i] + vector2[i];
+                if(vector2 == null) vector2[i] = 0;
+                sum[i] = vector1[i] + vector2[0];
         }
         return sum;
     }
@@ -404,4 +346,37 @@ public class StaticMathClass {
         return trainingMatrix;
     }
 
+    public static double[][] normalizeInput(double[][] input) {
+        int rows = input.length;
+        int cols = input[0].length;
+
+        double[] minValues = new double[cols];
+        double[] maxValues = new double[cols];
+
+        for (int j = 0; j < cols; j++) {
+            double min = Double.MAX_VALUE;
+            double max = Double.MIN_VALUE;
+            for (int i = 0; i < rows; i++) {
+                min = Math.min(min, input[i][j]);
+                max = Math.max(max, input[i][j]);
+            }
+            minValues[j] = min;
+            maxValues[j] = max;
+        }
+
+        double[][] scaledData = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                double range = maxValues[j] - minValues[j];
+
+                if (range == 0) {
+                    scaledData[i][j] = 1;
+                } else {
+                    scaledData[i][j] = (input[i][j] - minValues[j]) / range;
+                }
+            }
+        }
+
+        return scaledData;
+    }
 }
