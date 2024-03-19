@@ -28,7 +28,7 @@ public class Layer {
         layerOutput = new double[numberOfNodes][dataLength];
         activatedLayerOutput = new double[numberOfNodes][dataLength];
         this.layerType = layerType;
-        this.backPropCache = new double[dataLength];
+        this.backPropCache = null;
         this.dZ_dA = new double[numberOfNodes][dataLength];
     }
 
