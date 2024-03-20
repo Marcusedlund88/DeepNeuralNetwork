@@ -63,13 +63,13 @@ public class StaticMathClass {
         return outPutVector;
     }
 
-    public static double[] vectorMultiplication(double[] vector1, double[] vector2){
+    public static double[] elementWiseVectorMultiplication(double[] vector1, double[] vector2){
 
-        double outPutVector[] = new double[vector1.length];
+        double outPutVector[] = new double[vector2.length];
 
         for(int i = 0; i < vector1.length; i++){
             for (int j = 0; j < vector2.length; j++) {
-                outPutVector[i] = vector1[i] * vector2[j];
+                outPutVector[j] += vector1[i] * vector2[j];
             }
 
         }
