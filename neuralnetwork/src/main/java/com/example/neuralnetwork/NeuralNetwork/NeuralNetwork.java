@@ -192,6 +192,9 @@ public class NeuralNetwork {
 
         }
         Collections.reverse(layerList);
+        for (Layer layer: layers) {
+            layer.setBackPropCache(null);
+        }
     }
 
     /**
