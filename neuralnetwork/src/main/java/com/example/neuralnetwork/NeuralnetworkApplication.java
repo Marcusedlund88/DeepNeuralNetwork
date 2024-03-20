@@ -34,15 +34,15 @@ public class NeuralNetworkApplication {
         List<TrainingObject> trainingObjects = new ArrayList<>();
         trainingObjects.add(trainingObject1);
         trainingObjects.add(trainingObject2);
-        trainingObjects.add(trainingObject3);
-        trainingObjects.add(trainingObject4);
+        //trainingObjects.add(trainingObject3);
+        //trainingObjects.add(trainingObject4);
 
         double expected = 1;
 
-        NeuralNetwork n = new NeuralNetwork(initialData1, 4, 40, 1, 1, 0.0001);
+        NeuralNetwork n = new NeuralNetwork(initialData1, 6, 20, 1, 1, 0.001);
             n.createEmptyNetwork();
 
-            for(int i = 0; i < 2000; i++){
+            for(int i = 0; i < 20000; i++){
                 Collections.shuffle(trainingObjects);
                 for(TrainingObject to : trainingObjects){
                     n.setExpectedValue(to.expectedValue);

@@ -176,6 +176,7 @@ public class NeuralNetwork {
                                 }
                             }
                             case Hidden, Bias ->{
+
                                 tempGradients = StaticMathClass.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
                                 tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
@@ -191,6 +192,9 @@ public class NeuralNetwork {
 
         }
         Collections.reverse(layerList);
+        for (Layer layer: layers) {
+            layer.setBackPropCache(null);
+        }
     }
 
     /**
@@ -264,14 +268,16 @@ public class NeuralNetwork {
      */
     private void updateWeights(Neuron neuron, double[] dC_dW, double learnRate){
         double[][] weights = neuron.getWeights();
+        weights = StaticMathClass.transposeMatrix(weights);
         double[][] updatedWeights = new double[weights.length][weights[0].length];
+
 
         for (int i = 0; i < updatedWeights.length; i++) {
             for (int j = 0; j < updatedWeights[0].length; j++) {
                 updatedWeights[i][j] = weights[i][j] - learnRate*dC_dW[j];
             }
         }
-        neuron.setWeights(updatedWeights);
+        neuron.setWeights(StaticMathClass.transposeMatrix(updatedWeights));
     }
 
     /**
