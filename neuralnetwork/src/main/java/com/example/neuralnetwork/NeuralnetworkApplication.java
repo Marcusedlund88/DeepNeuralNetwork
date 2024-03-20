@@ -16,19 +16,19 @@ public class NeuralNetworkApplication {
 
         double[][] initialData1 =
                 {{1},{1},{1},{1}};
-        TrainingObject trainingObject1 = new TrainingObject(StaticMathClass.normalizeInput(initialData1), 1);
+        TrainingObject trainingObject1 = new TrainingObject(initialData1, 1);
 
         double[][] initialData2 =
                 {{0.8},{1},{1},{1}};
-        TrainingObject trainingObject2 = new TrainingObject(StaticMathClass.normalizeInput(initialData2), 0.8);
+        TrainingObject trainingObject2 = new TrainingObject(initialData2, 0.8);
 
         double[][] initialData3 =
                 {{1},{0.5},{1},{1}};
-        TrainingObject trainingObject3 = new TrainingObject(StaticMathClass.normalizeInput(initialData3), 0.5);
+        TrainingObject trainingObject3 = new TrainingObject(initialData3, 0.5);
 
         double[][] initialData4 =
                 {{0},{0}, {0},{0}};
-        TrainingObject trainingObject4 = new TrainingObject(StaticMathClass.normalizeInput(initialData4), 0);
+        TrainingObject trainingObject4 = new TrainingObject(initialData4, 0);
 
 
         List<TrainingObject> trainingObjects = new ArrayList<>();
@@ -39,7 +39,7 @@ public class NeuralNetworkApplication {
 
         double expected = 1;
 
-        NeuralNetwork n = new NeuralNetwork(initialData1, 4, 20, 1, 1, 0.001);
+        NeuralNetwork n = new NeuralNetwork(initialData1, 4, 40, 1, 1, 0.0001);
             n.createEmptyNetwork();
 
             for(int i = 0; i < 2000; i++){

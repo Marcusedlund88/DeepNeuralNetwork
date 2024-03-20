@@ -1,7 +1,5 @@
 package com.example.neuralnetwork.Math;
 
-import org.junit.Assert;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class StaticMathClassTest {
@@ -42,7 +40,7 @@ class StaticMathClassTest {
         double[] vector1 = {1,2,3};
         double[] vector2 = {4,5,6};
 
-        double[] output = StaticMathClass.vectorMultiplication(vector1,vector2);
+        double[] output = StaticMathClass.elementWiseVectorMultiplication(vector1,vector2);
         double[] actual = {};
 
         assertArrayEquals(output,actual);

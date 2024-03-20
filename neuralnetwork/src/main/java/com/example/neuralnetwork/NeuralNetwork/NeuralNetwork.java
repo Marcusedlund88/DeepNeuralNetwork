@@ -176,7 +176,7 @@ public class NeuralNetwork {
                                 }
                             }
                             case Hidden, Bias ->{
-                                tempGradients = StaticMathClass.vectorMultiplication(cachedGradients, dA_dZ);
+                                tempGradients = StaticMathClass.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
                                 tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
                                 cachedGradients = StaticMathClass.vectorAddition(tempGradients,cachedGradients);
@@ -345,20 +345,17 @@ public class NeuralNetwork {
         switch (neuron.neuronType){
             case Output -> {
 
-                for(int i = 0; i < dZ_dW.length; i++){
-                    for (int j = 0; j < dZ_dW[0].length; j++) {
-                        dC_dW[i] += dA_dZ[i] * dZ_dW[i][j] * dE_dA;
-                    }
-                }
+                dC_dW = StaticMathClass.vectorScalarMultiplication(dE_dA,dA_dZ);
+                dZ_dW = StaticMathClass.transposeMatrix(dZ_dW);
+                dC_dW = StaticMathClass.vectorMatrixMultiplication(dC_dW, dZ_dW);
+
                 return dC_dW;
             }
             case Hidden, Bias -> {
+                dC_dW = StaticMathClass.elementWiseVectorMultiplication(dC_dW_prev,dA_dZ);
+                dZ_dW = StaticMathClass.transposeMatrix(dZ_dW);
+                dC_dW = StaticMathClass.vectorMatrixMultiplication(dC_dW, dZ_dW);
 
-                for(int i = 0; i < dZ_dW.length; i++){
-                    for (int j = 0; j < dZ_dW[0].length; j++) {
-                        dC_dW[i] += dA_dZ[i] * dZ_dW[i][j] * dC_dW_prev[i];
-                    }
-                }
                 return dC_dW;
             }
         }
