@@ -1,8 +1,17 @@
 package com.example.neuralnetwork.Math;
 
+import org.junit.jupiter.api.BeforeAll;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class StaticMathClassTest {
+
+    private static MathOperations mathOperation;
+
+    @BeforeAll
+    static void setUp() {
+        mathOperation = new StaticMathClass();
+    }
 
     @org.junit.jupiter.api.Test
     void fillVectorWithSameValue() {
@@ -25,7 +34,7 @@ class StaticMathClassTest {
         double[][] matrix = {{1,2,3},{1,2,3},{1,2,3}};
         double[] vector = {1,2,3};
 
-        double[] output = StaticMathClass.vectorMatrixMultiplication(vector, matrix);
+        double[] output = mathOperation.vectorMatrixMultiplication(vector, matrix);
         double[] actual = {14,14,14};
         assertArrayEquals(output,actual);
 
@@ -40,8 +49,8 @@ class StaticMathClassTest {
         double[] vector1 = {1,2,3};
         double[] vector2 = {4,5,6};
 
-        double[] output = StaticMathClass.elementWiseVectorMultiplication(vector1,vector2);
-        double[] actual = {};
+        double[] output = mathOperation.elementWiseVectorMultiplication(vector1,vector2);
+        double[] actual = {4,10,18};
 
         assertArrayEquals(output,actual);
     }
@@ -115,7 +124,7 @@ class StaticMathClassTest {
         double[] vector1 = {1,2,3};
         double[] vector2 = {4,5,6};
 
-        double[] output = StaticMathClass.vectorAddition(vector1,vector2);
+        double[] output = mathOperation.vectorAddition(vector1,vector2);
         double[] actual = {5,7,9};
 
         assertArrayEquals(output,actual);

@@ -4,6 +4,13 @@ import java.util.Random;
 
 public class StaticMathClass implements MathOperations{
 
+    /**
+     * Fills a vector with the same specified value.
+     *
+     * @param columns The number of elements in the vector.
+     * @param value The value to fill the vector with.
+     * @return An array representing the vector filled with the specified value.
+     */
     public double[] fillVectorWithSameValue(int columns, int value){
         double[] temp = new double[columns];
         for (int i = 0; i < temp.length; i++){
@@ -12,6 +19,14 @@ public class StaticMathClass implements MathOperations{
         return temp;
     }
 
+    /**
+     * Fills a matrix with the same specified value.
+     *
+     * @param rows The number of rows in the matrix.
+     * @param columns The number of columns in the matrix.
+     * @param value The value to fill the matrix with.
+     * @return An array representing the matrix filled with the specified value.
+     */
     public double[][] fillMatrixWithSameValue(int rows, int columns, int value){
         double[][] temp = new double[rows][columns];
         for (int i = 0; i < temp.length; i++){
@@ -22,6 +37,13 @@ public class StaticMathClass implements MathOperations{
         return temp;
     }
 
+    /**
+     * Generates a random bias value using Xavier/Glorot initialization.
+     *
+     * @param edgesIn The number of incoming edges to the neuron.
+     * @param edgesOut The number of outgoing edges from the neuron.
+     * @return A random bias value initialized according to Xavier/Glorot initialization.
+     */
     public double generateRandomBias(int edgesIn, int edgesOut) {
         Random random = new Random();
 
@@ -35,6 +57,15 @@ public class StaticMathClass implements MathOperations{
 
         return bias;
     }
+
+    /**
+     * Updates the bias value using gradient descent.
+     *
+     * @param learnRate The learning rate (alpha) used for updating the bias.
+     * @param bias The current bias value.
+     * @param dC_dB The gradient of the cost function with respect to the bias.
+     * @return The updated bias value after applying gradient descent.
+     */
     public double updateBias(double learnRate, double bias, double[] dC_dB){
         double meanBias = 0;
 
@@ -44,6 +75,15 @@ public class StaticMathClass implements MathOperations{
 
         return bias - learnRate*(meanBias/dC_dB.length);
     }
+
+    /**
+     * Performs vector-matrix multiplication.
+     *
+     * @param vector The vector to be multiplied.
+     * @param matrix The matrix to be multiplied.
+     * @return The result of multiplying the vector by the matrix.
+     * @throws IllegalArgumentException if the dimensions of the vector and matrix are incompatible for multiplication.
+     */
     public double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
         double[] temp = new double[matrix.length];
 
@@ -55,6 +95,13 @@ public class StaticMathClass implements MathOperations{
         return temp;
     }
 
+    /**
+     * Performs scalar-vector multiplication.
+     *
+     * @param scalar The scalar value to multiply the vector by.
+     * @param vector The vector to be multiplied by the scalar.
+     * @return The result of multiplying the vector by the scalar.
+     */
     public double[] vectorScalarMultiplication(double scalar, double[] vector){
         double outPutVector[] = new double[vector.length];
         for(int i = 0; i < outPutVector.length; i++){
@@ -63,6 +110,14 @@ public class StaticMathClass implements MathOperations{
         return outPutVector;
     }
 
+    /**
+     * Performs element-wise vector multiplication.
+     *
+     * @param vector1 The first vector for element-wise multiplication.
+     * @param vector2 The second vector for element-wise multiplication.
+     * @return The result of element-wise multiplication of the two vectors.
+     * @throws IllegalArgumentException if the dimensions of the vectors are not equal.
+     */
     public double[] elementWiseVectorMultiplication(double[] vector1, double[] vector2){
 
         double outPutVector[] = new double[vector2.length];
@@ -76,6 +131,12 @@ public class StaticMathClass implements MathOperations{
         return outPutVector;
     }
 
+    /**
+     * Creates a zero-vector.
+     *
+     * @param length The length of the vector.
+     * @return A zero-vector of length "length".
+     */
     public double[] makeZeroVector(int length){
         double[] temp = new double[length];
         for (int i = 0; i < temp.length; i++){
@@ -84,6 +145,13 @@ public class StaticMathClass implements MathOperations{
         return temp;
     }
 
+    /**
+     * Creates a zero-matrix.
+     *
+     * @param rows The number of rows.
+     * @param columns The number of columns
+     * @return A zero-matrix with dimensions rows x columns.
+     */
     public double[][] makeZeroMatrix(int rows, int columns){
         double[][] temp = new double[rows][columns];
         for (int i = 0; i < temp.length; i++){
@@ -94,6 +162,14 @@ public class StaticMathClass implements MathOperations{
         return temp;
     }
 
+    /**
+     * Adds two matrices element-wise.
+     *
+     * @param matrixOne The first matrix to be added.
+     * @param matrixTwo The second matrix to be added.
+     * @return The result of element-wise addition of the two matrices.
+     * @throws IllegalArgumentException if the dimensions of the matrices are not equal.
+     */
     public double[][] AddMatrix(double[][] matrixOne, double[][] matrixTwo){
 
         double[][] addedMatrix = new double[matrixOne.length][matrixOne[0].length];
@@ -104,6 +180,13 @@ public class StaticMathClass implements MathOperations{
         }
         return addedMatrix;
     }
+
+    /**
+     * Gets the prediction from the input matrix.
+     *
+     * @param input The input matrix.
+     * @return The prediction matrix obtained from the input matrix.
+     */
     public double[][] GetPrediction(double[][] input){
         double[][] prediction = new double[input.length][input[0].length];
         for (int i = 0; i < input.length; i++){
@@ -113,6 +196,13 @@ public class StaticMathClass implements MathOperations{
         }
         return prediction;
     }
+
+    /**
+     * Transposes the input matrix.
+     *
+     * @param inputMatrix The input matrix to be transposed.
+     * @return The transposed matrix.
+     */
     public double[][] transposeMatrix(double[][] inputMatrix){
         double[][] transposedMatrix = new double[inputMatrix[0].length][inputMatrix.length];
 
@@ -124,6 +214,12 @@ public class StaticMathClass implements MathOperations{
         return transposedMatrix;
     }
 
+    /**
+     * Gets the prediction from the input vector.
+     *
+     * @param input The input vector.
+     * @return The prediction obtained from the input vector.
+     */
     public double GetPrediction(double[] input){
         double sum = 0;
         for(double value : input){
@@ -131,6 +227,15 @@ public class StaticMathClass implements MathOperations{
         }
         return sum;
     }
+
+    /**
+     * Calculates the weighted sum of inputs using the provided weights.
+     *
+     * @param input The input matrix.
+     * @param weights The weight matrix.
+     * @return The weighted sum array.
+     * @throws IllegalArgumentException if the dimensions of the input and weights matrices are not compatible.
+     */
 
     public double[] weightedSum(double[][] input, double[][] weights){
         double[] weightedSum = new double[input.length];
@@ -143,6 +248,13 @@ public class StaticMathClass implements MathOperations{
        return weightedSum;
     }
 
+    /**
+     * Applies the ReLU activation function to the weighted inputs.
+     * ReLU (Rectified Linear Unit) sets all negative values to zero and keeps positive values unchanged.
+     *
+     * @param weightedInput The array of weighted inputs.
+     * @return The array of activated outputs after applying the ReLU activation function.
+     */
     public double[] ReluActivateNeuron(double[] weightedInput){
         double[] activatedOutput = new double[weightedInput.length];
         for(int i = 0; i < activatedOutput.length; i++) {
@@ -162,9 +274,15 @@ public class StaticMathClass implements MathOperations{
             activatedVector[i] = 1 / (1 + Math.exp(-vector[i]));
         }
         return activatedVector;
-
     }
 
+    /**
+     * Applies the sigmoid activation function to the input vector.
+     * Sigmoid activation function squashes the input values to the range [0, 1].
+     *
+     * @param vector The input vector.
+     * @return The array of activated outputs after applying the sigmoid activation function.
+     */
     public double[] outputSoftMaxActivation(double[] vector){
         double[] activatedVector = new double[vector.length];
         double sum = 0;
@@ -178,6 +296,14 @@ public class StaticMathClass implements MathOperations{
         return activatedVector;
     }
 
+    /**
+     * Computes the gradient of the loss function with respect to the predicted values.
+     * This method calculates the gradient of the mean squared error loss function.
+     *
+     * @param predictedValue The predicted values produced by the neural network.
+     * @param expectedValue  The expected values.
+     * @return The gradient matrix of the loss function with respect to the predicted values.
+     */
     public double[][] dC_dA(double[][] predictedValue, double[][] expectedValue){
         double dC_dA = 0;
         int n = predictedValue[0].length;
@@ -185,7 +311,6 @@ public class StaticMathClass implements MathOperations{
         double[][] tempMatrix = new double[predictedValue.length][predictedValue[0].length];
         double totalLoss = 0.0000;
 
-// Iterate over each element in the predicted and expected values matrices
         for (int i = 0; i < predictedValue.length; i++) {
             for (int j = 0; j < predictedValue[0].length; j++) {
                 tempVector[j] = 2.0/n*(predictedValue[i][j] - expectedValue[i][j]);
@@ -195,12 +320,18 @@ public class StaticMathClass implements MathOperations{
             totalLoss = 0;
         }
 
-// Calculate the average loss
         double averageLoss = totalLoss / (predictedValue.length);
 
         return tempMatrix;
     }
 
+    /**
+     * Computes the gradient of the ReLU activation function with respect to its input.
+     * The ReLU activation function is defined as f(x) = max(0, x).
+     *
+     * @param reluVector The input vector to the ReLU activation function.
+     * @return The gradient vector of the ReLU activation function with respect to its input.
+     */
     public double[] dA_dZ_relu(double[] reluVector){
 
         double[] reluGradientVector = new double[reluVector.length];
@@ -215,16 +346,32 @@ public class StaticMathClass implements MathOperations{
         return reluGradientVector;
     }
 
+    /**
+     * Performs element-wise addition of two vectors.
+     *
+     * @param vector1 The first vector.
+     * @param vector2 The second vector.
+     * @return The sum of the two input vectors.
+     */
     public double[] vectorAddition(double[] vector1, double[] vector2){
         double[] sum = new double[vector1.length];
 
         for (int i = 0; i < sum.length; i++) {
                 if(vector2 == null) vector2[i] = 0;
-                sum[i] = vector1[i] + vector2[0];
+                sum[i] = vector1[i] + vector2[i];
         }
         return sum;
     }
 
+    /**
+     * Calculates the compatibility score between two vectors based on the Big Five personality traits:
+     * Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.
+     * Compatibility scores are assigned based on the similarity of corresponding traits.
+     *
+     * @param input     A 2D array representing two vectors of Big Five personality trait values.
+     * @param roundedBy The number of decimal places to round the compatibility score.
+     * @return The compatibility score between the two vectors, rounded to the specified decimal places.
+     */
     public double vectorTrainingBigFiveCompability(double[][] input, double roundedBy){
 
         double[] vector1 = input[0];
@@ -351,6 +498,14 @@ public class StaticMathClass implements MathOperations{
         return sum;
     }
 
+    /**
+     * Generates a random training input matrix for a neural network.
+     * Each row of the matrix represents a vector of Big Five personality traits.
+     * The traits are randomly generated within the range [0, 1] and rounded to the specified precision.
+     *
+     * @param roundedBy The precision to which the generated values should be rounded.
+     * @return A 2D array representing the random training input matrix.
+     */
     public double[][] createRandomTrainingInput(double roundedBy){
 
         double sum = 0;
@@ -375,39 +530,5 @@ public class StaticMathClass implements MathOperations{
             trainingMatrix[1][i] = bigFiveVector2[i];
         }
         return trainingMatrix;
-    }
-
-    public double[][] normalizeInput(double[][] input) {
-        int rows = input.length;
-        int cols = input[0].length;
-
-        double[] minValues = new double[cols];
-        double[] maxValues = new double[cols];
-
-        for (int j = 0; j < cols; j++) {
-            double min = Double.MAX_VALUE;
-            double max = Double.MIN_VALUE;
-            for (int i = 0; i < rows; i++) {
-                min = Math.min(min, input[i][j]);
-                max = Math.max(max, input[i][j]);
-            }
-            minValues[j] = min;
-            maxValues[j] = max;
-        }
-
-        double[][] scaledData = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                double range = maxValues[j] - minValues[j];
-
-                if (range == 0) {
-                    scaledData[i][j] = 1;
-                } else {
-                    scaledData[i][j] = (input[i][j] - minValues[j]) / range;
-                }
-            }
-        }
-
-        return scaledData;
     }
 }
