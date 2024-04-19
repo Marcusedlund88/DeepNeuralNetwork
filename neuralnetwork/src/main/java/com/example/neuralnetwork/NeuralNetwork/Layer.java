@@ -1,6 +1,6 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.example.neuralnetwork.Math.MathOperations;
 
 public class Layer {
 
@@ -21,7 +21,9 @@ public class Layer {
     private Layer previousLayer;
     private Layer nextLayer;
 
-    public Layer(int numberOfNodes, int dataLength, LayerType layerType){
+    private final MathOperations mathOperations;
+
+    public Layer(int numberOfNodes, int dataLength, LayerType layerType, MathOperations mathOperations){
         this.numberOfNeurons = numberOfNodes;
         neurons = new Neuron[numberOfNodes];
         bias = new double[numberOfNodes];
@@ -30,6 +32,7 @@ public class Layer {
         this.layerType = layerType;
         this.backPropCache = null;
         this.dZ_dA = new double[numberOfNodes][dataLength];
+        this.mathOperations = mathOperations;
     }
 
     public int getNumberOfNeurons() {
@@ -69,7 +72,7 @@ public class Layer {
     }
 
     public void setLayerInput(double[][] input){
-        this.layerInput = StaticMathClass.transposeMatrix(input);
+        this.layerInput = mathOperations.transposeMatrix(input);
     }
 
     public Layer getPreviousLayer() {

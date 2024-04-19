@@ -1,5 +1,6 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
+import com.example.neuralnetwork.Math.MathOperations;
 import com.example.neuralnetwork.Math.StaticMathClass;
 
 import java.util.Arrays;
@@ -17,12 +18,14 @@ public class NeuralNetwork {
     private final int lastLayerIndex;
     private final int numberOfInputNeurons;
     private double dE_dA;
-    private double expectedValue;
-    private double predictedValue;
+    private double[][] expectedValue;
+    private double[][] predictedValue;
     private final double learnRate;
     private Layer[] layers;
 
-    public NeuralNetwork(double[][] input, int numberOfLayers, int hiddenLayerWidth, int numberOfOutputNodes, double expectedValue, double learnRate) {
+    private final MathOperations mathOperations;
+
+    public NeuralNetwork(double[][] input, int numberOfLayers, int hiddenLayerWidth, int numberOfOutputNodes, double[][] expectedValue, double learnRate, MathOperations mathOperations) {
         this.input = input;
         this.numberOfLayers = numberOfLayers;
         this.hiddenLayerWidth = hiddenLayerWidth;
@@ -32,6 +35,7 @@ public class NeuralNetwork {
         this.inputDataLength = input[0].length;
         this.lastLayerIndex = numberOfLayers-1;
         this.numberOfInputNeurons = input.length;
+        this.mathOperations = mathOperations;
     }
 
     /**
@@ -44,13 +48,13 @@ public class NeuralNetwork {
 
         for (int i = 0; i < numberOfLayers; i++) {
             if (i == 0) {
-                layers[i] = new Layer(numberOfInputNeurons, inputDataLength, Layer.LayerType.InputLayer);
+                layers[i] = new Layer(numberOfInputNeurons, inputDataLength, Layer.LayerType.InputLayer, mathOperations);
             }
             if (i == numberOfLayers - 1) {
-                layers[i] = new Layer(numberOfOutputNodes, inputDataLength, Layer.LayerType.OutputLayer);
+                layers[i] = new Layer(numberOfOutputNodes, inputDataLength, Layer.LayerType.OutputLayer, mathOperations);
             }
             if (i != 0 && i != numberOfLayers - 1) {
-                layers[i] = new Layer(hiddenLayerWidth + 1, inputDataLength, Layer.LayerType.HiddenLayer);
+                layers[i] = new Layer(hiddenLayerWidth + 1, inputDataLength, Layer.LayerType.HiddenLayer, mathOperations);
             }
         }
 
@@ -98,7 +102,7 @@ public class NeuralNetwork {
     * Prints predicted value, expected value, and error percentage.
     */
     public void propagateForward() {
-        double[][] layerInput = StaticMathClass.transposeMatrix(input);
+        double[][] layerInput = mathOperations.transposeMatrix(input);
         for (Layer layer : layers){
             Neuron[] neurons = layer.getNeurons();
             switch (layer.layerType){
@@ -118,10 +122,13 @@ public class NeuralNetwork {
             }
             layerInput = layer.getActivatedLayerOutput();
         }
-        System.out.println("Predicted Value: "+ predictedValue);
-        System.out.println("Expected Value: "+ expectedValue);
-        double error = 100*(Math.abs(predictedValue-expectedValue))/(0.5*(predictedValue + expectedValue));
-        System.out.println("Error of: "+ error + " percent");
+        //System.out.println("Predicted Value: "+ predictedValue);
+        //System.out.println("Expected Value: "+ expectedValue);
+        //double error = 100*(Math.abs(predictedValue-expectedValue))/(0.5*(predictedValue + expectedValue));
+        //System.out.println("Error of: "+ error + " percent");
+        //System.out.println();
+        System.out.println(expectedValue[0][0]);
+        System.out.println(predictedValue[0][0]);
         System.out.println();
     }
 
@@ -131,8 +138,8 @@ public class NeuralNetwork {
     * Calculates gradients for weights using backpropagation.
     */
     public void propagateBackwards(){
-        dE_dA = StaticMathClass.dC_dA(predictedValue, expectedValue);
-
+        double[][] dE_dA_matrix =  mathOperations.dC_dA(predictedValue, expectedValue);
+        dE_dA = dE_dA_matrix[0][0];
         double[] dA_dZ;
         double[][] dZ_dW;
         double[] dC_dW;
@@ -164,23 +171,23 @@ public class NeuralNetwork {
 
                         switch (neuron.neuronType){
                             case Output -> {
-                                tempGradients = StaticMathClass.vectorScalarMultiplication(dE_dA,dA_dZ);
-                                tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
+                                tempGradients = mathOperations.vectorScalarMultiplication(dE_dA,dA_dZ);
+                                tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
                                 if(cachedGradients == null){
                                     layer.setBackPropCache(tempGradients);
                                 }
                                 else{
-                                    cachedGradients = StaticMathClass.vectorAddition(tempGradients,cachedGradients);
+                                    cachedGradients = mathOperations.vectorAddition(tempGradients,cachedGradients);
                                     layer.setBackPropCache(cachedGradients);
                                 }
                             }
                             case Hidden, Bias ->{
 
-                                tempGradients = StaticMathClass.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
-                                tempGradients = StaticMathClass.vectorMatrixMultiplication(tempGradients,dZ_dA);
+                                tempGradients = mathOperations.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
+                                tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients,dZ_dA);
 
-                                cachedGradients = StaticMathClass.vectorAddition(tempGradients,cachedGradients);
+                                cachedGradients = mathOperations.vectorAddition(tempGradients,cachedGradients);
                                 layer.setBackPropCache(cachedGradients);
                             }
                         }
@@ -212,11 +219,11 @@ public class NeuralNetwork {
             if(i != neurons.length-1
                     || currentLayer.layerType == Layer.LayerType.InputLayer
                     || currentLayer.layerType == Layer.LayerType.OutputLayer){
-                neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType);
-                neurons[i].setBias(StaticMathClass.generateRandomBias(edgesIn, edgesOut));
+                neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType, mathOperations);
+                neurons[i].setBias(mathOperations.generateRandomBias(edgesIn, edgesOut));
                 continue;
             }
-            neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, Neuron.NeuronType.Bias);
+            neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, Neuron.NeuronType.Bias, mathOperations);
         }
 
         currentLayer.setNeurons(neurons);
@@ -226,7 +233,7 @@ public class NeuralNetwork {
             case HiddenLayer, OutputLayer -> {
                 currentLayer.setPreviousLayer(previousLayer);
                 previousLayer.setNextLayer(currentLayer);
-                setInitialWeights(neurons,edgesIn);
+                setInitialWeights(neurons,edgesIn, edgesOut);
             }
         }
     }
@@ -239,14 +246,14 @@ public class NeuralNetwork {
     * @param neurons The array of neurons for which initial weights are set.
     * @param edgesIn The number of incoming edges to each neuron.
     */
-    private void setInitialWeights(Neuron[] neurons, int edgesIn) {
+    private void setInitialWeights(Neuron[] neurons, int edgesIn, int edgesOut) {
         for (Neuron neuron : neurons) {
             Random random = new Random();
 
             double[][] generatedWeights = new double[edgesIn][inputDataLength];
             for (int i = 0; i < edgesIn; i++) {
                 for (int j = 0; j < inputDataLength; j++) {
-                    double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + numberOfOutputNodes)));
+                    double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + edgesOut)));
                     double minValue = -range;
                     double maxValue = range;
 
@@ -268,7 +275,7 @@ public class NeuralNetwork {
      */
     private void updateWeights(Neuron neuron, double[] dC_dW, double learnRate){
         double[][] weights = neuron.getWeights();
-        weights = StaticMathClass.transposeMatrix(weights);
+        weights = mathOperations.transposeMatrix(weights);
         double[][] updatedWeights = new double[weights.length][weights[0].length];
 
 
@@ -277,7 +284,7 @@ public class NeuralNetwork {
                 updatedWeights[i][j] = weights[i][j] - learnRate*dC_dW[j];
             }
         }
-        neuron.setWeights(StaticMathClass.transposeMatrix(updatedWeights));
+        neuron.setWeights(mathOperations.transposeMatrix(updatedWeights));
     }
 
     /**
@@ -298,7 +305,7 @@ public class NeuralNetwork {
             activatedLayerOutput[counter] = neuron.getActivatedOutput();
             counter++;
         }
-        layer.setActivatedLayerOutput(StaticMathClass.transposeMatrix(activatedLayerOutput));
+        layer.setActivatedLayerOutput(mathOperations.transposeMatrix(activatedLayerOutput));
     }
 
     /**
@@ -351,16 +358,16 @@ public class NeuralNetwork {
         switch (neuron.neuronType){
             case Output -> {
 
-                dC_dW = StaticMathClass.vectorScalarMultiplication(dE_dA,dA_dZ);
-                dZ_dW = StaticMathClass.transposeMatrix(dZ_dW);
-                dC_dW = StaticMathClass.vectorMatrixMultiplication(dC_dW, dZ_dW);
+                dC_dW = mathOperations.vectorScalarMultiplication(dE_dA,dA_dZ);
+                dZ_dW = mathOperations.transposeMatrix(dZ_dW);
+                dC_dW = mathOperations.vectorMatrixMultiplication(dC_dW, dZ_dW);
 
                 return dC_dW;
             }
             case Hidden, Bias -> {
-                dC_dW = StaticMathClass.elementWiseVectorMultiplication(dC_dW_prev,dA_dZ);
-                dZ_dW = StaticMathClass.transposeMatrix(dZ_dW);
-                dC_dW = StaticMathClass.vectorMatrixMultiplication(dC_dW, dZ_dW);
+                dC_dW = mathOperations.elementWiseVectorMultiplication(dC_dW_prev,dA_dZ);
+                dZ_dW = mathOperations.transposeMatrix(dZ_dW);
+                dC_dW = mathOperations.vectorMatrixMultiplication(dC_dW, dZ_dW);
 
                 return dC_dW;
             }
@@ -376,15 +383,17 @@ public class NeuralNetwork {
         int counter = 0;
         for(Neuron neuron : neurons){
             outputSum[counter] = neuron.getActivatedOutput();
+            counter++;
         }
-        predictedValue = StaticMathClass.GetPrediction(outputSum);
+        predictedValue = mathOperations.GetPrediction(outputSum);
+        System.out.println("");
     }
 
     public void setInput(double[][] input) {
         this.input = input;
     }
 
-    public void setExpectedValue(double expectedValue) {
+    public void setExpectedValue(double[][] expectedValue) {
         this.expectedValue = expectedValue;
     }
 
@@ -398,8 +407,8 @@ public class NeuralNetwork {
 
         Neuron[] neurons = new Neuron[hiddenLayerWidth];
         Layer[] tempLayer = new Layer[numberOfLayers+1];
-        Layer newFirstLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
-        Layer newSecondLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer);
+        Layer newFirstLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer, mathOperations);
+        Layer newSecondLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer, mathOperations);
         Layer inputLayer = layers[0];
 
         setLayer(
