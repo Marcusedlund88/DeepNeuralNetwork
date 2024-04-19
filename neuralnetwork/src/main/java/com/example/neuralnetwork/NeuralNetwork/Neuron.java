@@ -1,5 +1,6 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
+import com.example.neuralnetwork.Math.MathOperations;
 import com.example.neuralnetwork.Math.StaticMathClass;
 
 public class Neuron {
@@ -25,12 +26,15 @@ public class Neuron {
     private double[] activatedOutput;
     private double bias;
 
-    public Neuron(int edgesIn, int edgesOut, int inputLength, NeuronType neuronType){
+    private final MathOperations mathOperations;
+
+    public Neuron(int edgesIn, int edgesOut, int inputLength, NeuronType neuronType, MathOperations mathOperations){
         this.edgesIn = edgesIn;
         this.edgesOut = edgesOut;
         this.weights = new double[inputLength][edgesIn];
         this.neuronType = neuronType;
         this.neuronStatus = NeuronStatus.DeActivated;
+        this.mathOperations = mathOperations;
     }
 
     public double[][] getInput() {
@@ -44,12 +48,12 @@ public class Neuron {
         switch (neuronType){
             case Input -> setActivatedOutput(input[0]);
             case Hidden -> {
-                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
-                setActivatedOutput(StaticMathClass.ReluActivateNeuron(getWeightedOutput()));
+                setWeightedOutput(mathOperations.weightedSum(input, getWeights()));
+                setActivatedOutput(mathOperations.ReluActivateNeuron(getWeightedOutput()));
             }
             case Output -> {
-                setWeightedOutput(StaticMathClass.weightedSum(input, getWeights()));
-                setActivatedOutput(StaticMathClass.outputSigmoidActivation(getWeightedOutput()));
+                setWeightedOutput(mathOperations.weightedSum(input, getWeights()));
+                setActivatedOutput(mathOperations.outputSigmoidActivation(getWeightedOutput()));
             }
             case Bias -> {
                 setWeightedOutput(weights[0]);

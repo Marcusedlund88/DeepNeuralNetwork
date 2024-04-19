@@ -2,9 +2,9 @@ package com.example.neuralnetwork.Math;
 
 import java.util.Random;
 
-public class StaticMathClass {
+public class StaticMathClass implements MathOperations{
 
-    public static double[] fillVectorWithSameValue(int columns, int value){
+    public double[] fillVectorWithSameValue(int columns, int value){
         double[] temp = new double[columns];
         for (int i = 0; i < temp.length; i++){
             temp[i] = value;
@@ -12,7 +12,7 @@ public class StaticMathClass {
         return temp;
     }
 
-    public static double[][] fillMatrixWithSameValue(int rows, int columns, int value){
+    public double[][] fillMatrixWithSameValue(int rows, int columns, int value){
         double[][] temp = new double[rows][columns];
         for (int i = 0; i < temp.length; i++){
             for(int j = 0; j < temp[0].length; j++){
@@ -22,7 +22,7 @@ public class StaticMathClass {
         return temp;
     }
 
-    public static double generateRandomBias(int edgesIn, int edgesOut) {
+    public double generateRandomBias(int edgesIn, int edgesOut) {
         Random random = new Random();
 
         double bias = 0;
@@ -35,7 +35,7 @@ public class StaticMathClass {
 
         return bias;
     }
-    public static double updateBias(double learnRate, double bias, double[] dC_dB){
+    public double updateBias(double learnRate, double bias, double[] dC_dB){
         double meanBias = 0;
 
         for (int i = 0; i < dC_dB.length; i++) {
@@ -44,7 +44,7 @@ public class StaticMathClass {
 
         return bias - learnRate*(meanBias/dC_dB.length);
     }
-    public static double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
+    public double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
         double[] temp = new double[matrix.length];
 
         for (int i = 0; i < temp.length; i++){
@@ -55,7 +55,7 @@ public class StaticMathClass {
         return temp;
     }
 
-    public static double[] vectorScalarMultiplication(double scalar, double[] vector){
+    public double[] vectorScalarMultiplication(double scalar, double[] vector){
         double outPutVector[] = new double[vector.length];
         for(int i = 0; i < outPutVector.length; i++){
             outPutVector[i] = scalar*vector[i];
@@ -63,7 +63,7 @@ public class StaticMathClass {
         return outPutVector;
     }
 
-    public static double[] elementWiseVectorMultiplication(double[] vector1, double[] vector2){
+    public double[] elementWiseVectorMultiplication(double[] vector1, double[] vector2){
 
         double outPutVector[] = new double[vector2.length];
 
@@ -76,7 +76,7 @@ public class StaticMathClass {
         return outPutVector;
     }
 
-    public static double[] makeZeroVector(int length){
+    public double[] makeZeroVector(int length){
         double[] temp = new double[length];
         for (int i = 0; i < temp.length; i++){
             temp[i] = 0;
@@ -84,7 +84,7 @@ public class StaticMathClass {
         return temp;
     }
 
-    public static double[][] makeZeroMatrix(int rows, int columns){
+    public double[][] makeZeroMatrix(int rows, int columns){
         double[][] temp = new double[rows][columns];
         for (int i = 0; i < temp.length; i++){
             for(int j = 0; j < temp[0].length; j++){
@@ -94,7 +94,7 @@ public class StaticMathClass {
         return temp;
     }
 
-    public static double[][] AddMatrix(double[][] matrixOne, double[][] matrixTwo){
+    public double[][] AddMatrix(double[][] matrixOne, double[][] matrixTwo){
 
         double[][] addedMatrix = new double[matrixOne.length][matrixOne[0].length];
         for(int i = 0; i < matrixOne.length; i++){
@@ -104,16 +104,16 @@ public class StaticMathClass {
         }
         return addedMatrix;
     }
-    public static double GetPrediction(double[][] input){
-        double prediction = 0;
+    public double[][] GetPrediction(double[][] input){
+        double[][] prediction = new double[input.length][input[0].length];
         for (int i = 0; i < input.length; i++){
             for(int j = 0; j < input[0].length; j++){
-                prediction += input[i][j];
+                prediction[i][j] += input[i][j];
             }
         }
         return prediction;
     }
-    public static double[][] transposeMatrix(double[][] inputMatrix){
+    public double[][] transposeMatrix(double[][] inputMatrix){
         double[][] transposedMatrix = new double[inputMatrix[0].length][inputMatrix.length];
 
         for(int i = 0; i < transposedMatrix.length; i ++){
@@ -124,7 +124,7 @@ public class StaticMathClass {
         return transposedMatrix;
     }
 
-    public static double GetPrediction(double[] input){
+    public double GetPrediction(double[] input){
         double sum = 0;
         for(double value : input){
             sum += value;
@@ -132,7 +132,7 @@ public class StaticMathClass {
         return sum;
     }
 
-    public static double[] weightedSum(double[][] input, double[][] weights){
+    public double[] weightedSum(double[][] input, double[][] weights){
         double[] weightedSum = new double[input.length];
 
         for(int i = 0; i < input.length; i++){
@@ -143,7 +143,7 @@ public class StaticMathClass {
        return weightedSum;
     }
 
-    public static double[] ReluActivateNeuron(double[] weightedInput){
+    public double[] ReluActivateNeuron(double[] weightedInput){
         double[] activatedOutput = new double[weightedInput.length];
         for(int i = 0; i < activatedOutput.length; i++) {
             if (weightedInput[i] <= 0) {
@@ -155,7 +155,7 @@ public class StaticMathClass {
         return activatedOutput;
     }
 
-    public static double[] outputSigmoidActivation(double[] vector){
+    public double[] outputSigmoidActivation(double[] vector){
         double[] activatedVector = new double[vector.length];
 
         for (int i = 0; i < activatedVector.length; i++) {
@@ -165,12 +165,43 @@ public class StaticMathClass {
 
     }
 
-    public static double dC_dA(double predictedValue, double expectedValue){
-        double dC_dA = (predictedValue - expectedValue);
-        return dC_dA;
+    public double[] outputSoftMaxActivation(double[] vector){
+        double[] activatedVector = new double[vector.length];
+        double sum = 0;
+        for(double value : vector){
+            sum += Math.exp(value);
+        }
+
+        for (int i = 0; i < vector.length; i++) {
+            activatedVector[i] = Math.exp(vector[i])/sum;
+        }
+        return activatedVector;
     }
 
-    public static double[] dA_dZ_relu(double[] reluVector){
+    public double[][] dC_dA(double[][] predictedValue, double[][] expectedValue){
+        double dC_dA = 0;
+        int n = predictedValue[0].length;
+        double[] tempVector  = new double[predictedValue[0].length];
+        double[][] tempMatrix = new double[predictedValue.length][predictedValue[0].length];
+        double totalLoss = 0.0000;
+
+// Iterate over each element in the predicted and expected values matrices
+        for (int i = 0; i < predictedValue.length; i++) {
+            for (int j = 0; j < predictedValue[0].length; j++) {
+                tempVector[j] = 2.0/n*(predictedValue[i][j] - expectedValue[i][j]);
+            }
+            tempMatrix[i] = tempVector;
+            tempVector  = new double[predictedValue[0].length];
+            totalLoss = 0;
+        }
+
+// Calculate the average loss
+        double averageLoss = totalLoss / (predictedValue.length);
+
+        return tempMatrix;
+    }
+
+    public double[] dA_dZ_relu(double[] reluVector){
 
         double[] reluGradientVector = new double[reluVector.length];
 
@@ -184,7 +215,7 @@ public class StaticMathClass {
         return reluGradientVector;
     }
 
-    public static double[] vectorAddition(double[] vector1, double[] vector2){
+    public double[] vectorAddition(double[] vector1, double[] vector2){
         double[] sum = new double[vector1.length];
 
         for (int i = 0; i < sum.length; i++) {
@@ -194,7 +225,7 @@ public class StaticMathClass {
         return sum;
     }
 
-    public static double vectorTrainingBigFiveCompability(double[][] input, double roundedBy){
+    public double vectorTrainingBigFiveCompability(double[][] input, double roundedBy){
 
         double[] vector1 = input[0];
         double[] vector2 = input[1];
@@ -320,7 +351,7 @@ public class StaticMathClass {
         return sum;
     }
 
-    public static double[][] createRandomTrainingInput(double roundedBy){
+    public double[][] createRandomTrainingInput(double roundedBy){
 
         double sum = 0;
         double[] bigFiveVector1 = new double[5];
@@ -346,7 +377,7 @@ public class StaticMathClass {
         return trainingMatrix;
     }
 
-    public static double[][] normalizeInput(double[][] input) {
+    public double[][] normalizeInput(double[][] input) {
         int rows = input.length;
         int cols = input[0].length;
 
