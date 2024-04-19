@@ -43,8 +43,6 @@ public interface MathOperations {
 
         double[][] createRandomTrainingInput(double roundedBy);
 
-        double[][] normalizeInput(double[][] input);
-
         double[][] dC_dA(double[][] predictedValue, double[][] expectedValue);
 
         double[] vectorAddition(double[] vector1, double[] vector2);
