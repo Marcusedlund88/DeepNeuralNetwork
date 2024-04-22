@@ -1,5 +1,6 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
+import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Math.MathOperations;
 import com.example.neuralnetwork.Math.StaticMathClass;
 import org.springframework.stereotype.Component;
@@ -27,13 +28,13 @@ public class NeuralNetwork {
 
     private final MathOperations mathOperations;
 
-    public NeuralNetwork(double[][] input, int numberOfLayers, int hiddenLayerWidth, int numberOfOutputNodes, double[][] expectedValue, double learnRate, MathOperations mathOperations) {
-        this.input = input;
-        this.numberOfLayers = numberOfLayers;
-        this.hiddenLayerWidth = hiddenLayerWidth;
-        this.numberOfOutputNodes = numberOfOutputNodes;
-        this.expectedValue = expectedValue;
-        this.learnRate = learnRate;
+    public NeuralNetwork(InputObject inputObject, MathOperations mathOperations) {
+        this.input = inputObject.getInput();
+        this.numberOfLayers = inputObject.getNumberOfLayers();
+        this.hiddenLayerWidth = inputObject.getHiddenLayerWidth();
+        this.numberOfOutputNodes = inputObject.getNumberOfOutputNodes();
+        this.expectedValue = inputObject.getExpectedValue();
+        this.learnRate = inputObject.getLearnRate();
         this.inputDataLength = input[0].length;
         this.lastLayerIndex = numberOfLayers-1;
         this.numberOfInputNeurons = input.length;

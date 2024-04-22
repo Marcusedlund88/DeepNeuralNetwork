@@ -14,8 +14,12 @@ import java.util.*;
 @SpringBootApplication
 public class NeuralNetworkApplication {
 
-    @Autowired
+
     private NeuralNetwork neuralNetwork;
+
+    public NeuralNetworkApplication(NeuralNetwork neuralNetwork){
+        this.neuralNetwork = neuralNetwork;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(NeuralNetworkApplication.class, args);
