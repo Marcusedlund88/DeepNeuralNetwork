@@ -2,21 +2,23 @@ package com.example.neuralnetwork.NeuralNetwork;
 
 import com.example.neuralnetwork.Math.MathOperations;
 import com.example.neuralnetwork.Math.StaticMathClass;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+@Component
 public class NeuralNetwork {
 
     private double[][] input;
-    private final int numberOfLayers;
-    private final int hiddenLayerWidth;
-    private final int numberOfOutputNodes;
-    private final int inputDataLength;
-    private final int lastLayerIndex;
-    private final int numberOfInputNeurons;
+    private int numberOfLayers;
+    private int hiddenLayerWidth;
+    private int numberOfOutputNodes;
+    private int inputDataLength;
+    private int lastLayerIndex;
+    private int numberOfInputNeurons;
     private double dE_dA;
     private double[][] expectedValue;
     private double[][] predictedValue;
