@@ -412,6 +412,7 @@ public class NeuralNetwork{
             counter++;
         }
         predictedValue = mathOperations.GetPrediction(outputSum);
+        setPredictedValue(predictedValue);
     }
 
     public void setInput(double[][] input) {
@@ -467,5 +468,13 @@ public class NeuralNetwork{
 
     public void rollBackPreviousNetwork(){
         //TODO: fix rollback
+    }
+
+    private void setPredictedValue(double[][] predictedValue){
+        this.predictedValue = predictedValue;
+    }
+
+    public double getPredictedValuePercent(){
+        return predictedValue[0][0]*100;
     }
 }

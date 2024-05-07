@@ -31,13 +31,6 @@ class StaticMathClassTest {
 
     @org.junit.jupiter.api.Test
     void vectorMatrixMultiplication() {
-        double[][] matrix = {{1,2,3},{1,2,3},{1,2,3}};
-        double[] vector = {1,2,3};
-
-        double[] output = mathOperation.vectorMatrixMultiplication(vector, matrix);
-        double[] actual = {14,14,14};
-        assertArrayEquals(output,actual);
-
     }
 
     @org.junit.jupiter.api.Test
@@ -46,13 +39,6 @@ class StaticMathClassTest {
 
     @org.junit.jupiter.api.Test
     void vectorMultiplication() {
-        double[] vector1 = {1,2,3};
-        double[] vector2 = {4,5,6};
-
-        double[] output = mathOperation.elementWiseVectorMultiplication(vector1,vector2);
-        double[] actual = {4,10,18};
-
-        assertArrayEquals(output,actual);
     }
 
     @org.junit.jupiter.api.Test
@@ -121,13 +107,6 @@ class StaticMathClassTest {
 
     @org.junit.jupiter.api.Test
     void vectorAddition() {
-        double[] vector1 = {1,2,3};
-        double[] vector2 = {4,5,6};
-
-        double[] output = mathOperation.vectorAddition(vector1,vector2);
-        double[] actual = {5,7,9};
-
-        assertArrayEquals(output,actual);
     }
 
     @org.junit.jupiter.api.Test

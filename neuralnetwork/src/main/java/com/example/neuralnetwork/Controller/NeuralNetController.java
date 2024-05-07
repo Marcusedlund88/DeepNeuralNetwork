@@ -22,11 +22,10 @@ public class NeuralNetController {
     }
 
     //TODO: Access level all
-    @PostMapping("/request")
+    @GetMapping("/request")
     public ResponseEntity<String> SendRequest(@RequestBody InputObject inputObject){
 
-        neuralNetService.verifyMatch(inputObject);
-        return ResponseEntity.ok("OK");
+        return ResponseEntity.ok(neuralNetService.verifyMatch(inputObject));
     }
 
     //TODO: Access level admin only
