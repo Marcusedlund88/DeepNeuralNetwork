@@ -17,16 +17,11 @@ public class NeuralNetConfig {
 
     @Bean
     public InputObject inputObject(){
-        double[][] expectedV = {{0.8}};
-        double[][] initialData1 =
-                {{1},{1},{1},{1}};
-        return new InputObject(initialData1, 5, 8,1,expectedV,0.05);
-    };
+        return null;
+    }
 
     @Bean
     public NeuralNetwork neuralNetwork(MathOperations mathOperations){
-
-        return new NeuralNetwork(inputObject(), mathOperations);
+        return new NeuralNetwork(mathOperations);
     }
-
 }

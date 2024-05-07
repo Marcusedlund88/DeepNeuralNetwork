@@ -1,11 +1,11 @@
 package com.example.neuralnetwork.Controller;
 
-import com.example.neuralnetwork.Data.InputObject;
-import com.example.neuralnetwork.Data.SearchRequest;
-import com.example.neuralnetwork.Data.TrainingRequest;
+import com.example.neuralnetwork.Data.*;
 import com.example.neuralnetwork.Service.NeuralNetService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("api/v1")
 public class NeuralNetController {
 
-    private NeuralNetService neuralNetService;
+    private final NeuralNetService neuralNetService;
 
     public NeuralNetController(NeuralNetService neuralNetService){
         this.neuralNetService = neuralNetService;
@@ -23,19 +23,19 @@ public class NeuralNetController {
 
     //TODO: Access level all
     @PostMapping("/request")
-    public String SendRequest(@RequestBody SearchRequest searchRequest){
+    public ResponseEntity<String> SendRequest(@RequestBody InputObject inputObject){
 
-        neuralNetService.processRequest(searchRequest.getQueryArray());
-        return "OK";
+        neuralNetService.verifyMatch(inputObject);
+        return ResponseEntity.ok("OK");
     }
 
     //TODO: Access level admin only
-    @PostMapping("/train")
-    public String SendTRainingRequest(@RequestBody InputObject inputObject){
-        TrainingRequest trainingRequest = new TrainingRequest();
-        trainingRequest.setInputObject(inputObject);
-        neuralNetService.processTrainingRequest(inputObject);
-        return "OK";
+    @GetMapping("/initTraining")
+    public ResponseEntity<String> initTraining(@RequestBody TrainingParam trainingParam){
+        if(trainingParam != null){
+            neuralNetService.StartTraining(trainingParam);
+            return ResponseEntity.ok("OK");
+        }
+        return ResponseEntity.ok("Failed");
     }
-
 }
