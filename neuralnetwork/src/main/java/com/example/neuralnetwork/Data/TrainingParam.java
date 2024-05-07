@@ -16,7 +16,7 @@ public class TrainingParam {
     private int inputRows;
     private int inputColumns;
     private Boolean shouldBuildNetwork;
-
+    
     public int getNumberOfTrainingObjects() {
         return numberOfTrainingObjects;
     }
