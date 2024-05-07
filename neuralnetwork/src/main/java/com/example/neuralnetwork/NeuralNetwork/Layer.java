@@ -1,26 +1,38 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
 import com.example.neuralnetwork.Math.MathOperations;
+import com.google.gson.annotations.Expose;
 
 public class Layer {
+
 
     protected enum LayerType{
         InputLayer,
         HiddenLayer,
         OutputLayer
     }
+    @Expose
     protected LayerType layerType;
+    @Expose
     private double[][] layerInput;
-    private final int numberOfNeurons;
+    @Expose
+    private int numberOfNeurons;
+    @Expose
     private Neuron[] neurons;
+    @Expose
     private double[] bias;
+    @Expose
     private double[][] layerOutput;
+    @Expose
     private double [][] activatedLayerOutput;
+    @Expose
     private double[] backPropCache;
+    @Expose
     private double[][] dZ_dA;
     private Layer previousLayer;
     private Layer nextLayer;
-
+    @Expose
+    private int dataLength;
     private final MathOperations mathOperations;
 
     public Layer(int numberOfNodes, int dataLength, LayerType layerType, MathOperations mathOperations){
@@ -33,10 +45,15 @@ public class Layer {
         this.backPropCache = null;
         this.dZ_dA = new double[numberOfNodes][dataLength];
         this.mathOperations = mathOperations;
+        this.dataLength = dataLength;
     }
 
     public int getNumberOfNeurons() {
         return numberOfNeurons;
+    }
+
+    public void setNumberOfNeurons(int numberOfNeurons) {
+        this.numberOfNeurons = numberOfNeurons;
     }
 
     public Neuron[] getNeurons() {

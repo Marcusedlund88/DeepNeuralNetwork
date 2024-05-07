@@ -1,9 +1,9 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.google.gson.annotations.Expose;
 
-public class Neuron {
+public class Neuron{
 
     protected enum NeuronType{
         Input,
@@ -16,16 +16,22 @@ public class Neuron {
         Activated,
         DeActivated
     }
+    @Expose
     protected NeuronType neuronType;
+    @Expose
     private NeuronStatus neuronStatus;
+    @Expose
     private int edgesIn;
+    @Expose
     private int edgesOut;
+    @Expose
     private double[][] input;
+    @Expose
     private double[][] weights;
+    @Expose
     private double[] weightedOutput;
+    @Expose
     private double[] activatedOutput;
-    private double bias;
-
     private final MathOperations mathOperations;
 
     public Neuron(int edgesIn, int edgesOut, int inputLength, NeuronType neuronType, MathOperations mathOperations){
@@ -86,11 +92,11 @@ public class Neuron {
         this.activatedOutput = activatedOutput;
     }
 
-    public double getBias() {
-        return bias;
+    public void setEdgesIn(int edgesIn){
+        this.edgesIn = edgesIn;
     }
 
-    public void setBias(double bias) {
-        this.bias = bias;
+    public int getEdgesIn(){
+        return edgesIn;
     }
 }

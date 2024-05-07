@@ -1,5 +1,6 @@
 package com.example.neuralnetwork.Math;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class StaticMathClass implements MathOperations{
@@ -13,9 +14,7 @@ public class StaticMathClass implements MathOperations{
      */
     public double[] fillVectorWithSameValue(int columns, int value){
         double[] temp = new double[columns];
-        for (int i = 0; i < temp.length; i++){
-            temp[i] = value;
-        }
+        Arrays.fill(temp, value);
         return temp;
     }
 
@@ -47,7 +46,7 @@ public class StaticMathClass implements MathOperations{
     public double generateRandomBias(int edgesIn, int edgesOut) {
         Random random = new Random();
 
-        double bias = 0;
+        double bias;
         double range = (Math.sqrt(6) / (Math.sqrt(edgesIn + edgesOut)));
         double minValue = -range;
         double maxValue = range;
@@ -69,8 +68,8 @@ public class StaticMathClass implements MathOperations{
     public double updateBias(double learnRate, double bias, double[] dC_dB){
         double meanBias = 0;
 
-        for (int i = 0; i < dC_dB.length; i++) {
-            meanBias += dC_dB[i];
+        for (double value : dC_dB) {
+            meanBias += value;
         }
 
         return bias - learnRate*(meanBias/dC_dB.length);
@@ -103,7 +102,7 @@ public class StaticMathClass implements MathOperations{
      * @return The result of multiplying the vector by the scalar.
      */
     public double[] vectorScalarMultiplication(double scalar, double[] vector){
-        double outPutVector[] = new double[vector.length];
+        double[] outPutVector = new double[vector.length];
         for(int i = 0; i < outPutVector.length; i++){
             outPutVector[i] = scalar*vector[i];
         }
@@ -120,7 +119,7 @@ public class StaticMathClass implements MathOperations{
      */
     public double[] elementWiseVectorMultiplication(double[] vector1, double[] vector2){
 
-        double outPutVector[] = new double[vector2.length];
+        double[] outPutVector = new double[vector2.length];
 
         for(int i = 0; i < vector1.length; i++){
             for (int j = 0; j < vector2.length; j++) {
@@ -305,7 +304,7 @@ public class StaticMathClass implements MathOperations{
      * @return The gradient matrix of the loss function with respect to the predicted values.
      */
     public double[][] dC_dA(double[][] predictedValue, double[][] expectedValue){
-        double dC_dA = 0;
+        double dC_dA;
         int n = predictedValue[0].length;
         double[] tempVector  = new double[predictedValue[0].length];
         double[][] tempMatrix = new double[predictedValue.length][predictedValue[0].length];
@@ -355,9 +354,11 @@ public class StaticMathClass implements MathOperations{
      */
     public double[] vectorAddition(double[] vector1, double[] vector2){
         double[] sum = new double[vector1.length];
+        if(vector2 == null){
+            vector2 = makeZeroVector(vector1.length);
+        }
 
         for (int i = 0; i < sum.length; i++) {
-                if(vector2 == null) vector2[i] = 0;
                 sum[i] = vector1[i] + vector2[i];
         }
         return sum;
@@ -378,7 +379,7 @@ public class StaticMathClass implements MathOperations{
         double[] vector2 = input[1];
         double[] matchVector = new double[vector1.length];
         double sum = 1;
-        double ratio = 0;
+        double ratio;
 
         for (int i = 0; i < vector1.length; i++) {
             ratio = Math.sqrt(Math.pow(vector1[i]-vector2[i],2));
@@ -486,13 +487,12 @@ public class StaticMathClass implements MathOperations{
                 }
                 if(ratio <= 1){
                     matchVector[i] = 0.25;
-                    continue;
                 }
             }
         }
 
-        for (int i = 0; i < matchVector.length; i++) {
-            sum *= matchVector[i];
+        for (double value : matchVector) {
+            sum *= value;
         }
         sum = Math.round(sum * roundedBy) / roundedBy;
         return sum;
@@ -508,11 +508,11 @@ public class StaticMathClass implements MathOperations{
      */
     public double[][] createRandomTrainingInput(double roundedBy){
 
-        double sum = 0;
+        double sum;
         double[] bigFiveVector1 = new double[5];
         double[] bigFiveVector2 = new double[5];
-        double v1 = 0;
-        double v2 = 0;
+        double v1;
+        double v2;
         double[][] trainingMatrix = new double[2][bigFiveVector1.length];
 
         Random random = new Random();
@@ -523,12 +523,9 @@ public class StaticMathClass implements MathOperations{
             bigFiveVector2[i] = Math.round(v2 * roundedBy) / roundedBy;
         }
 
-        for (int i = 0; i < bigFiveVector1.length; i++) {
-            trainingMatrix[0][i] = bigFiveVector1[i];
-        }
-        for (int i = 0; i < bigFiveVector2.length; i++) {
-            trainingMatrix[1][i] = bigFiveVector2[i];
-        }
+        System.arraycopy(bigFiveVector1, 0, trainingMatrix[0], 0, bigFiveVector1.length);
+        System.arraycopy(bigFiveVector2, 0, trainingMatrix[1], 0, bigFiveVector2.length);
+
         return trainingMatrix;
     }
 }

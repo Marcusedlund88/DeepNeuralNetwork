@@ -1,7 +1,6 @@
 package com.example.neuralnetwork.Training;
 
 public class TrainingObject {
-
     public double[][] trainingInput;
     public double expectedValue;
 

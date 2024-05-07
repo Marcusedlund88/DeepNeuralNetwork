@@ -1,9 +1,9 @@
 package com.example.neuralnetwork.Math;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public interface MathOperations {
-
+public interface MathOperations{
 
         double[] fillVectorWithSameValue(int columns, int value);
 
@@ -46,5 +46,4 @@ public interface MathOperations {
         double[][] dC_dA(double[][] predictedValue, double[][] expectedValue);
 
         double[] vectorAddition(double[] vector1, double[] vector2);
-
 }

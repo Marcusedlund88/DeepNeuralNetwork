@@ -1,17 +1,20 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
-import com.example.neuralnetwork.Data.InputObject;
+import com.example.neuralnetwork.Data.TrainingParam;
+import com.example.neuralnetwork.Exceptions.CreateEmptyNetworkException;
+import com.example.neuralnetwork.Exceptions.PropagationException;
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.example.neuralnetwork.Training.TrainingObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 @Component
-public class NeuralNetwork {
+public class NeuralNetwork{
 
     private double[][] input;
     private int numberOfLayers;
@@ -20,32 +23,47 @@ public class NeuralNetwork {
     private int inputDataLength;
     private int lastLayerIndex;
     private int numberOfInputNeurons;
-    private double dE_dA;
     private double[][] expectedValue;
     private double[][] predictedValue;
-    private final double learnRate;
+    private double learnRate;
     private Layer[] layers;
-
+    private double mse;
+    private double cacheMse;
+    private List<TrainingObject> trainingObjects;
+    private Boolean shouldBuildNetwork;
+    private Boolean isNetworkUp;
     private final MathOperations mathOperations;
 
-    public NeuralNetwork(InputObject inputObject, MathOperations mathOperations) {
-        this.input = inputObject.getInput();
-        this.numberOfLayers = inputObject.getNumberOfLayers();
-        this.hiddenLayerWidth = inputObject.getHiddenLayerWidth();
-        this.numberOfOutputNodes = inputObject.getNumberOfOutputNodes();
-        this.expectedValue = inputObject.getExpectedValue();
-        this.learnRate = inputObject.getLearnRate();
-        this.inputDataLength = input[0].length;
-        this.lastLayerIndex = numberOfLayers-1;
-        this.numberOfInputNeurons = input.length;
+    public NeuralNetwork(MathOperations mathOperations) {
         this.mathOperations = mathOperations;
     }
 
+    public void setNeuralNetwork(TrainingParam trainingParam) throws CreateEmptyNetworkException {
+
+        try {
+            verifyNewNetworkBuild(trainingParam);
+
+            if (shouldBuildNetwork) {
+                this.numberOfLayers = trainingParam.getNumberOfLayers();
+                this.hiddenLayerWidth = trainingParam.getHiddenLayerWidth();
+                this.numberOfOutputNodes = trainingParam.getNumberOfOutputNodes();
+
+                this.inputDataLength = trainingParam.getInputColumns();
+                this.lastLayerIndex = numberOfLayers - 1;
+                this.numberOfInputNeurons = trainingParam.getInputRows();
+                createEmptyNetwork();
+                isNetworkUp = true;
+            }
+        }
+        catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            throw new CreateEmptyNetworkException("Error creating network: "+ e.getCause());
+        }
+    }
     /**
     * Creates an empty neural network with the specified number of layers, input and output neurons, and layer widths.
     * Initializes each layer with the appropriate type (InputLayer, HiddenLayer, OutputLayer) and sets up the neurons accordingly.
     */
-    public void createEmptyNetwork() {
+    private void createEmptyNetwork() {
 
         layers = new Layer[numberOfLayers];
 
@@ -104,35 +122,38 @@ public class NeuralNetwork {
     * activating neurons and computing predicted values.
     * Prints predicted value, expected value, and error percentage.
     */
-    public void propagateForward() {
-        double[][] layerInput = mathOperations.transposeMatrix(input);
-        for (Layer layer : layers){
-            Neuron[] neurons = layer.getNeurons();
-            switch (layer.layerType){
-                case InputLayer -> {
-                    layer.setLayerInput(layerInput);
-                    layer.setActivatedLayerOutput(layerInput);
+    public void propagateForward() throws PropagationException{
+
+        try {
+            double[][] layerInput = mathOperations.transposeMatrix(input);
+            for (Layer layer : layers) {
+                Neuron[] neurons = layer.getNeurons();
+                switch (layer.layerType) {
+                    case InputLayer -> {
+                        layer.setLayerInput(layerInput);
+                        layer.setActivatedLayerOutput(layerInput);
+                    }
+                    case HiddenLayer -> {
+                        layer.setLayerInput(layerInput);
+                        activateNeurons(layer, neurons, layerInput);
+                    }
+                    case OutputLayer -> {
+                        layer.setLayerInput(layerInput);
+                        activateNeurons(layer, neurons, layerInput);
+                        getPredictedValue(layer.getNeurons());
+                    }
                 }
-                case HiddenLayer -> {
-                    layer.setLayerInput(layerInput);
-                    activateNeurons(layer, neurons, layerInput);
-                }
-                case OutputLayer -> {
-                    layer.setLayerInput(layerInput);
-                    activateNeurons(layer, neurons, layerInput);
-                    getPredictedValue(layer.getNeurons());
-                }
+                layerInput = layer.getActivatedLayerOutput();
             }
-            layerInput = layer.getActivatedLayerOutput();
+
+            System.out.println(expectedValue[0][0]);
+            System.out.println(predictedValue[0][0]);
+            System.out.println();
+            mse = Math.sqrt(Math.pow((predictedValue[0][0] - expectedValue[0][0]), 2));
         }
-        //System.out.println("Predicted Value: "+ predictedValue);
-        //System.out.println("Expected Value: "+ expectedValue);
-        //double error = 100*(Math.abs(predictedValue-expectedValue))/(0.5*(predictedValue + expectedValue));
-        //System.out.println("Error of: "+ error + " percent");
-        //System.out.println();
-        System.out.println(expectedValue[0][0]);
-        System.out.println(predictedValue[0][0]);
-        System.out.println();
+        catch (Exception e){
+            throw new PropagationException("An " + e.getCause() +  " occurred during back propagation");
+        }
     }
 
     /**
@@ -140,70 +161,73 @@ public class NeuralNetwork {
     * updating weights based on gradient descent.
     * Calculates gradients for weights using backpropagation.
     */
-    public void propagateBackwards(){
-        double[][] dE_dA_matrix =  mathOperations.dC_dA(predictedValue, expectedValue);
-        dE_dA = dE_dA_matrix[0][0];
-        double[] dA_dZ;
-        double[][] dZ_dW;
-        double[] dC_dW;
-        double[][] dZ_dA;
-        double[] cachedGradients = null;
-        double[] tempGradients;
-        double[] hiddenTempGradients;
+    public void propagateBackwards() throws PropagationException {
 
-        List<Layer> layerList = Arrays.asList(layers);
-        Collections.reverse(layerList);
-        Neuron[] neurons;
-        Layer nextLayer = null;
+        try {
+            double[][] dE_dA_matrix = mathOperations.dC_dA(predictedValue, expectedValue);
+            double dE_dA = dE_dA_matrix[0][0];
+            double[] dA_dZ;
+            double[][] dZ_dW;
+            double[] dC_dW;
+            double[][] dZ_dA;
+            double[] cachedGradients;
 
-        for(Layer layer : layerList){
-            tempGradients = null;
-            neurons = layer.getNeurons();
-            nextLayer = layer.getNextLayer();
-            for (Neuron neuron : neurons){
-                switch (neuron.neuronType) {
-                    case Output, Hidden, Bias -> {
-                        if(layer.layerType == Layer.LayerType.OutputLayer && neuron.neuronType == Neuron.NeuronType.Bias)break;
+            List<Layer> layerList = Arrays.asList(layers);
+            Collections.reverse(layerList);
+            Neuron[] neurons;
+            Layer nextLayer;
 
-                        cachedGradients = nextLayer != null ? nextLayer.getBackPropCache() : layer.getBackPropCache();
+            for (Layer layer : layerList) {
+                double[] tempGradients;
+                neurons = layer.getNeurons();
+                nextLayer = layer.getNextLayer();
+                for (Neuron neuron : neurons) {
+                    switch (neuron.neuronType) {
+                        case Output, Hidden, Bias -> {
+                            if (layer.layerType == Layer.LayerType.OutputLayer && neuron.neuronType == Neuron.NeuronType.Bias)
+                                break;
 
-                        dA_dZ = getActivationGradient(neuron);
-                        dZ_dA = neuron.getWeights();
-                        dZ_dW = neuron.getInput();
-                        dC_dW = getLossWeightGradient(neuron, dE_dA, dA_dZ, dZ_dW, cachedGradients);
+                            cachedGradients = nextLayer != null ? nextLayer.getBackPropCache() : layer.getBackPropCache();
 
-                        switch (neuron.neuronType){
-                            case Output -> {
-                                tempGradients = mathOperations.vectorScalarMultiplication(dE_dA,dA_dZ);
-                                tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients,dZ_dA);
+                            dA_dZ = getActivationGradient(neuron);
+                            dZ_dA = neuron.getWeights();
+                            dZ_dW = neuron.getInput();
+                            dC_dW = getLossWeightGradient(neuron, dE_dA, dA_dZ, dZ_dW, cachedGradients);
 
-                                if(cachedGradients == null){
-                                    layer.setBackPropCache(tempGradients);
+                            switch (neuron.neuronType) {
+                                case Output -> {
+                                    tempGradients = mathOperations.vectorScalarMultiplication(dE_dA, dA_dZ);
+                                    tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients, dZ_dA);
+
+                                    if (cachedGradients == null) {
+                                        layer.setBackPropCache(tempGradients);
+                                    } else {
+                                        cachedGradients = mathOperations.vectorAddition(tempGradients, cachedGradients);
+                                        layer.setBackPropCache(cachedGradients);
+                                    }
                                 }
-                                else{
-                                    cachedGradients = mathOperations.vectorAddition(tempGradients,cachedGradients);
+                                case Hidden, Bias -> {
+
+                                    tempGradients = mathOperations.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
+                                    tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients, dZ_dA);
+
+                                    cachedGradients = mathOperations.vectorAddition(tempGradients, cachedGradients);
                                     layer.setBackPropCache(cachedGradients);
                                 }
                             }
-                            case Hidden, Bias ->{
 
-                                tempGradients = mathOperations.elementWiseVectorMultiplication(cachedGradients, dA_dZ);
-                                tempGradients = mathOperations.vectorMatrixMultiplication(tempGradients,dZ_dA);
-
-                                cachedGradients = mathOperations.vectorAddition(tempGradients,cachedGradients);
-                                layer.setBackPropCache(cachedGradients);
-                            }
+                            updateWeights(neuron, dC_dW, learnRate);
                         }
-
-                        updateWeights(neuron, dC_dW, learnRate);
                     }
                 }
             }
-
+            Collections.reverse(layerList);
+            for (Layer layer : layers) {
+                layer.setBackPropCache(null);
+            }
         }
-        Collections.reverse(layerList);
-        for (Layer layer: layers) {
-            layer.setBackPropCache(null);
+        catch (Exception e){
+            throw new PropagationException("An " + e.getCause() +  " occurred during back propagation");
         }
     }
 
@@ -223,7 +247,6 @@ public class NeuralNetwork {
                     || currentLayer.layerType == Layer.LayerType.InputLayer
                     || currentLayer.layerType == Layer.LayerType.OutputLayer){
                 neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, neuronType, mathOperations);
-                neurons[i].setBias(mathOperations.generateRandomBias(edgesIn, edgesOut));
                 continue;
             }
             neurons[i] = new Neuron(edgesIn, edgesOut, inputLength, Neuron.NeuronType.Bias, mathOperations);
@@ -389,7 +412,6 @@ public class NeuralNetwork {
             counter++;
         }
         predictedValue = mathOperations.GetPrediction(outputSum);
-        System.out.println("");
     }
 
     public void setInput(double[][] input) {
@@ -400,56 +422,50 @@ public class NeuralNetwork {
         this.expectedValue = expectedValue;
     }
 
-    /**
-    * Inserts two hidden layers into the neural network architecture.
-    * Creates new layers with specified width and type as hidden layers.
-    * Sets neurons for each new layer using the provided parameters.
-    * Updates the layers array to include the newly inserted layers.
-    */
-    public void addHiddenLayerFirst(){
+    public void setLearnRate(double learnRate){this.learnRate = learnRate;}
 
-        Neuron[] neurons = new Neuron[hiddenLayerWidth];
-        Layer[] tempLayer = new Layer[numberOfLayers+1];
-        Layer newFirstLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer, mathOperations);
-        Layer newSecondLayer = new Layer(hiddenLayerWidth, inputDataLength, Layer.LayerType.HiddenLayer, mathOperations);
-        Layer inputLayer = layers[0];
+    public double getMse(){
+        return mse;
+    }
 
-        setLayer(
-                newFirstLayer,
-                inputLayer,
-                neurons,
-                numberOfInputNeurons,
-                hiddenLayerWidth,
-                inputDataLength,
-                Neuron.NeuronType.Hidden);
+    public void setCacheMse(double cacheMse){this.cacheMse = cacheMse;}
 
-        setLayer(
-                newSecondLayer,
-                newFirstLayer,
-                neurons,
-                hiddenLayerWidth,
-                hiddenLayerWidth,
-                inputDataLength,
-                Neuron.NeuronType.Hidden);
+    public double getCacheMse(){return cacheMse;}
 
+    public void setTrainingObjects(List<TrainingObject> trainingObjects){this.trainingObjects = trainingObjects;}
 
-        tempLayer[0] = layers[0];
-        tempLayer[1] = newFirstLayer;
-        tempLayer[2] = newSecondLayer;
-        layers[3].setPreviousLayer(newSecondLayer);
+    public List<TrainingObject> getTrainingObjects(){return trainingObjects;}
 
-        for(int i = 2; i < layers.length; i++){
-            tempLayer[i+1] = layers[i];
+    public Boolean getIsNetworkUp(){
+        if(isNetworkUp == null){
+            isNetworkUp = false;
+            return false;
         }
-        layers = tempLayer;
-        System.out.println();
+        return isNetworkUp;
     }
 
-    public void addLayerMiddle(){
-        //TODO: To be implemented
+    private void verifyNewNetworkBuild(TrainingParam trainingParam){
+
+        if(layers == null){
+            shouldBuildNetwork = true;
+            return;
+        }
+        if(!trainingParam.getShouldBuildNetwork()){
+            shouldBuildNetwork = false;
+            return;
+        }
+        shouldBuildNetwork = true;
     }
 
-    public void addLayerLast(){
-        //TODO: To be implemented
+    public void saveNeuralNetwork(NeuralNetwork neuralNetwork){
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        for(Layer layer : neuralNetwork.layers){
+            String json = gson.toJson(layer);
+            System.out.println(json);
+        }
+    }
+
+    public void rollBackPreviousNetwork(){
+        //TODO: fix rollback
     }
 }
