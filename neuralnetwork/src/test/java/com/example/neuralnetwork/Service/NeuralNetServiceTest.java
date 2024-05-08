@@ -8,17 +8,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 class NeuralNetServiceTest {
 
     @Mock
     private static MathOperations mathOperations;
     @Mock
     private static NeuralNetwork neuralNetwork;
+
+    @Autowired
+    private NeuralNetService neuralNetService;
     private TrainingParam mockParam;
 
     @BeforeAll
@@ -56,7 +62,9 @@ class NeuralNetServiceTest {
     }
 
     @Test
-    void startTraining() {
+    void startTraining(){
+        neuralNetService.StartTraining(mockParam);
+        assertTrue(neuralNetwork.getIsNetworkUp());
     }
 
     @Test

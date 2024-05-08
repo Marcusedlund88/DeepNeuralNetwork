@@ -48,9 +48,9 @@ public class NeuralNetwork{
                 this.hiddenLayerWidth = trainingParam.getHiddenLayerWidth();
                 this.numberOfOutputNodes = trainingParam.getNumberOfOutputNodes();
 
-                this.inputDataLength = trainingParam.getInputColumns();
+                this.inputDataLength = trainingParam.getInputDataLength();
                 this.lastLayerIndex = numberOfLayers - 1;
-                this.numberOfInputNeurons = trainingParam.getInputRows();
+                this.numberOfInputNeurons = trainingParam.getInputDataLength();
                 createEmptyNetwork();
                 isNetworkUp = true;
             }
@@ -152,7 +152,7 @@ public class NeuralNetwork{
             mse = Math.sqrt(Math.pow((predictedValue[0][0] - expectedValue[0][0]), 2));
         }
         catch (Exception e){
-            throw new PropagationException("An " + e.getCause() +  " occurred during back propagation");
+            throw new PropagationException("An " + e.getCause() +  " occurred during forward propagation");
         }
     }
 
