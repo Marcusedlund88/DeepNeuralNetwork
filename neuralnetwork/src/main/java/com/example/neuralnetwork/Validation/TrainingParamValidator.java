@@ -52,6 +52,10 @@ public class TrainingParamValidator implements Validator {
     }
 
     private boolean isValidTrainingRequest(TrainingParam trainingParam){
+        if((trainingParam.getInputCase() == TrainingParam.InputCase.CASE_TEN && trainingParam.getHiddenLayerWidth() < 10) ||
+                (trainingParam.getInputCase() == TrainingParam.InputCase.CASE_FIVE && trainingParam.getHiddenLayerWidth() < 5)){
+            return false;
+        }
         return trainingParam != null &&
                 (trainingParam.getInputCase() == TrainingParam.InputCase.CASE_FIVE|| trainingParam.getInputCase() == TrainingParam.InputCase.CASE_TEN) &&
                 trainingParam.getNumberOfTrainingObjects() != 0 &&

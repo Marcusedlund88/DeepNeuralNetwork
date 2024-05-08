@@ -39,10 +39,6 @@ public interface MathOperations{
 
         double[] outputSoftMaxActivation(double[] vector);
 
-        double vectorTrainingBigFiveCompability(double[][] input, double roundedBy);
-
-        double[][] createRandomTrainingInput(double roundedBy);
-
         double[][] dC_dA(double[][] predictedValue, double[][] expectedValue);
 
         double[] vectorAddition(double[] vector1, double[] vector2);

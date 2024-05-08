@@ -48,9 +48,9 @@ public class NeuralNetwork{
                 this.hiddenLayerWidth = trainingParam.getHiddenLayerWidth();
                 this.numberOfOutputNodes = trainingParam.getNumberOfOutputNodes();
 
-                this.inputDataLength = trainingParam.getInputDataLength();
+                this.inputDataLength = trainingParam.getColumns();
                 this.lastLayerIndex = numberOfLayers - 1;
-                this.numberOfInputNeurons = trainingParam.getInputDataLength();
+                this.numberOfInputNeurons = trainingParam.getRows();
                 createEmptyNetwork();
                 isNetworkUp = true;
             }

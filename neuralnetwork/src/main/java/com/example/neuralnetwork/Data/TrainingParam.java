@@ -10,7 +10,8 @@ public class TrainingParam {
         CASE_TEN,
         CASE_REBUILD
     }
-
+    private int rows;
+    private int columns;
     private InputCase inputCase;
     private int numberOfTrainingObjects;
     private int numberOfEpochs;
@@ -19,7 +20,6 @@ public class TrainingParam {
     private int numberOfLayers;
     private int hiddenLayerWidth;
     private int numberOfOutputNodes;
-    private int inputDataLength;
     private Boolean shouldBuildNetwork;
 
     public int getNumberOfTrainingObjects() {
@@ -46,19 +46,27 @@ public class TrainingParam {
         return numberOfOutputNodes;
     }
 
-    public int getInputDataLength() {
-        return inputDataLength;
-    }
-
-    public void setInputDataLength(int inputDataLength){
-        this.inputDataLength = inputDataLength;
-    }
-
     public Boolean getShouldBuildNetwork() {
         return shouldBuildNetwork;
     }
 
     public InputCase getInputCase(){
         return inputCase;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
     }
 }
