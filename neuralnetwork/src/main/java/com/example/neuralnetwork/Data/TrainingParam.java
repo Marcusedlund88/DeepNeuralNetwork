@@ -5,6 +5,14 @@ import lombok.Data;
 @Data
 public class TrainingParam {
 
+    public enum InputCase{
+        CASE_FIVE,
+        CASE_TEN,
+        CASE_REBUILD
+    }
+    private int rows;
+    private int columns;
+    private InputCase inputCase;
     private int numberOfTrainingObjects;
     private int numberOfEpochs;
     private double learnRate;
@@ -12,11 +20,8 @@ public class TrainingParam {
     private int numberOfLayers;
     private int hiddenLayerWidth;
     private int numberOfOutputNodes;
-    private int inputDataLength;
-    private int inputRows;
-    private int inputColumns;
     private Boolean shouldBuildNetwork;
-    
+
     public int getNumberOfTrainingObjects() {
         return numberOfTrainingObjects;
     }
@@ -41,19 +46,27 @@ public class TrainingParam {
         return numberOfOutputNodes;
     }
 
-    public int getInputDataLength() {
-        return inputDataLength;
-    }
-
-    public int getInputRows() {
-        return inputRows;
-    }
-
-    public int getInputColumns() {
-        return inputColumns;
-    }
-
     public Boolean getShouldBuildNetwork() {
         return shouldBuildNetwork;
+    }
+
+    public InputCase getInputCase(){
+        return inputCase;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public void setColumns(int columns) {
+        this.columns = columns;
     }
 }
