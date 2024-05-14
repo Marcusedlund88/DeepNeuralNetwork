@@ -6,6 +6,7 @@ import com.example.neuralnetwork.Math.StaticMathClass;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class NeuralNetConfig {

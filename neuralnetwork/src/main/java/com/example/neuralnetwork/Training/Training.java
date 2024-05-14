@@ -40,7 +40,14 @@ public class Training {
                 setTrainingList(trainingParam.getNumberOfTrainingObjects());
                 neuralNetwork.setTrainingObjects(trainingObjects);
             } else {
-                trainingObjects = neuralNetwork.getTrainingObjects();
+                if(trainingParam.getInputCase() == neuralNetwork.getCachedInputCase()) {
+                    trainingObjects = neuralNetwork.getTrainingObjects();
+                }
+                else{
+                    neuralNetwork.setCachedInputCase(trainingParam.getInputCase());
+                    setTrainingList(trainingParam.getNumberOfTrainingObjects());
+                    neuralNetwork.setTrainingObjects(trainingObjects);
+                }
             }
             for (int i = 0; i < trainingParam.getNumberOfEpochs(); i++) {
                 try {
@@ -60,7 +67,6 @@ public class Training {
                     mse = mse / trainingObjects.size();
 
                     if (mse > neuralNetwork.getCacheMse()) {
-                        neuralNetwork.saveNeuralNetwork(neuralNetwork);
                         System.out.println("Abort training");
                         break;
                     }
@@ -71,7 +77,6 @@ public class Training {
                     break;
                 }
             }
-            //neuralNetwork.saveNeuralNetwork(neuralNetwork);
         }
     }
 
@@ -146,12 +151,11 @@ public class Training {
 
     /**
      * Calculates the compatibility score between two vectors based on the Big Five personality traits:
-     * Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.
+     * Openness, Conscientiousness, Extroversion, Agreeableness, and Neuroticism.
      * Compatibility scores are assigned based on the similarity of corresponding traits.
      *
      * @param input     A 2D array representing two vectors of Big Five personality trait values.
      * @param roundedBy The number of decimal places to round the compatibility score.
-     * @return The compatibility score between the two vectors, rounded to the specified decimal places.
      */
     private void vectorTrainingBigFiveCompability(double[][] input, double roundedBy){
 
@@ -201,7 +205,7 @@ public class Training {
                     continue;
                 }
             }
-            //Extraversion
+            //Extroversion
             if (i == 2){
                 if(ratio <= 0.3){
                     matchVector[i] = 1;
