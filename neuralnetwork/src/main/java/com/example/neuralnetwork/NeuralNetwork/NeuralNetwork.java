@@ -1,17 +1,22 @@
 package com.example.neuralnetwork.NeuralNetwork;
 
 import com.example.neuralnetwork.Data.TrainingParam;
+import com.example.neuralnetwork.Data.TrainingSession;
 import com.example.neuralnetwork.Exceptions.CreateEmptyNetworkException;
 import com.example.neuralnetwork.Exceptions.PropagationException;
 import com.example.neuralnetwork.Math.MathOperations;
+import com.example.neuralnetwork.Service.NeuralNetService;
 import com.example.neuralnetwork.Training.TrainingObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.stereotype.Component;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class NeuralNetwork{
@@ -34,31 +39,55 @@ public class NeuralNetwork{
     private Boolean isNetworkUp;
     private final MathOperations mathOperations;
 
+    private TrainingParam.InputCase cachedInputCase;
+
     public NeuralNetwork(MathOperations mathOperations) {
         this.mathOperations = mathOperations;
     }
 
+    private void buildNetwork(
+            int numberOfLayers,
+            int hiddenLayerWidth,
+            int numberOfOutputNodes,
+            int columns,
+            int lastLayerIndex,
+            int rows){
+
+        this.numberOfLayers = numberOfLayers;
+        this.hiddenLayerWidth = hiddenLayerWidth;
+        this.numberOfOutputNodes = numberOfOutputNodes;
+
+        this.inputDataLength = columns;
+        this.lastLayerIndex = numberOfLayers - 1;
+        this.numberOfInputNeurons = rows;
+        createEmptyNetwork();
+        isNetworkUp = true;
+    }
     public void setNeuralNetwork(TrainingParam trainingParam) throws CreateEmptyNetworkException {
 
         try {
             verifyNewNetworkBuild(trainingParam);
 
             if (shouldBuildNetwork) {
-                this.numberOfLayers = trainingParam.getNumberOfLayers();
-                this.hiddenLayerWidth = trainingParam.getHiddenLayerWidth();
-                this.numberOfOutputNodes = trainingParam.getNumberOfOutputNodes();
-
-                this.inputDataLength = trainingParam.getColumns();
-                this.lastLayerIndex = numberOfLayers - 1;
-                this.numberOfInputNeurons = trainingParam.getRows();
-                createEmptyNetwork();
-                isNetworkUp = true;
+                buildNetwork(
+                        trainingParam.getNumberOfLayers(),
+                        trainingParam.getHiddenLayerWidth(),
+                        trainingParam.getNumberOfOutputNodes(),
+                        trainingParam.getColumns(),
+                        trainingParam.getNumberOfLayers(),
+                        trainingParam.getRows());
             }
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             throw new CreateEmptyNetworkException("Error creating network: "+ e.getCause());
         }
     }
+
+    public void rollBackNeuralNetwork(Layer[]  layers){
+        buildNetwork(layers.length,layers[1].getNumberOfNeurons(),layers[layers.length-1].getNumberOfNeurons(),
+        layers[0].getNeurons()[0].getInput()[0].length, layers.length, layers[0].getNeurons()[0].getInput()[0].length);
+    }
+
     /**
     * Creates an empty neural network with the specified number of layers, input and output neurons, and layer widths.
     * Initializes each layer with the appropriate type (InputLayer, HiddenLayer, OutputLayer) and sets up the neurons accordingly.
@@ -147,7 +176,9 @@ public class NeuralNetwork{
             }
 
             System.out.println(expectedValue[0][0]);
-            System.out.println(predictedValue[0][0]);
+            double value = predictedValue[0][0];
+            double roundedValue = Math.round(value * 10.0) / 10.0;
+            System.out.println(roundedValue);
             System.out.println();
             mse = Math.sqrt(Math.pow((predictedValue[0][0] - expectedValue[0][0]), 2));
         }
@@ -458,16 +489,28 @@ public class NeuralNetwork{
         shouldBuildNetwork = true;
     }
 
-    public void saveNeuralNetwork(NeuralNetwork neuralNetwork){
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        for(Layer layer : neuralNetwork.layers){
-            String json = gson.toJson(layer);
-            System.out.println(json);
-        }
-    }
-
     public void rollBackPreviousNetwork(){
-        //TODO: fix rollback
+        String filePath = "C:\\Users\\Min Dator\\Desktop\\Marcus\\MatchMaker\\NeuralNetwork\\neuralnetwork/myNetwork.json";
+
+        try {
+            // Step 2: Read file contents
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+
+            Gson gson = new Gson();
+            int count = 0;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                Layer layer = gson.fromJson(line, Layer.class);
+                layers[count] = layer;
+                count++;
+            }
+            bufferedReader.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setPredictedValue(double[][] predictedValue){
@@ -476,5 +519,21 @@ public class NeuralNetwork{
 
     public double getPredictedValuePercent(){
         return predictedValue[0][0]*100;
+    }
+
+    public Layer[] getLayers(){
+        return layers;
+    }
+
+    public void setLayers(Layer[] layers){
+        this.layers = layers;
+    }
+
+    public TrainingParam.InputCase getCachedInputCase() {
+        return cachedInputCase;
+    }
+
+    public void setCachedInputCase(TrainingParam.InputCase cachedInputCase) {
+        this.cachedInputCase = cachedInputCase;
     }
 }

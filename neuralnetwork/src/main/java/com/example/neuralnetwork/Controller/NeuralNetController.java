@@ -4,6 +4,7 @@ import com.example.neuralnetwork.Data.*;
 import com.example.neuralnetwork.Service.NeuralNetService;
 import com.example.neuralnetwork.Validation.TrainingParamValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,11 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class NeuralNetController {
 
     private final NeuralNetService neuralNetService;
+    private final MongoTemplate mongoTemplate;
     private final TrainingParamValidator trainingParamValidator;
 
-    public NeuralNetController(NeuralNetService neuralNetService, TrainingParamValidator trainingParamValidator){
+    public NeuralNetController(NeuralNetService neuralNetService, TrainingParamValidator trainingParamValidator, MongoTemplate mongoTemplate){
         this.neuralNetService = neuralNetService;
         this.trainingParamValidator = trainingParamValidator;
+        this.mongoTemplate = mongoTemplate;
     }
 
     //TODO: Access level all
@@ -44,5 +47,11 @@ public class NeuralNetController {
         }
         neuralNetService.StartTraining(trainingParam);
         return ResponseEntity.ok("OK");
+    }
+
+    @GetMapping("/loadNetwork")
+    public ResponseEntity<String> loadNetwork(){
+        String response = neuralNetService.loadNetwork();
+        return ResponseEntity.ok(response);
     }
 }

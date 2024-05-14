@@ -41,12 +41,9 @@ class NeuralNetServiceTest {
         mockParam = mock(TrainingParam.class);
 
         when(mockParam.getNumberOfOutputNodes()).thenReturn(1);
-        when(mockParam.getInputRows()).thenReturn(5);
-        when(mockParam.getInputColumns()).thenReturn(1);
         when(mockParam.getNumberOfLayers()).thenReturn(4);
         when(mockParam.getHiddenLayerWidth()).thenReturn(8);
         when(mockParam.getLearnRate()).thenReturn(0.05);
-        when(mockParam.getInputDataLength()).thenReturn(5);
         when(mockParam.getNumberOfTrainingObjects()).thenReturn(10);
         when(mockParam.getNumberOfEpochs()).thenReturn(10);
         when(mockParam.getShouldBuildNetwork()).thenReturn(true);
