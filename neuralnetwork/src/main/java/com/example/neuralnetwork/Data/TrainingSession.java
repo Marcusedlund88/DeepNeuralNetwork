@@ -12,21 +12,15 @@ import java.util.List;
 @Document(collation = "mycollection")
 public class TrainingSession {
 
-    @Id
-    private String Id;
-    private Date date;
+    private String date;
     private Layer[] layers;
 
-    public TrainingSession(Date date, Layer[] layers){
+    public TrainingSession(String date, Layer[] layers){
         this.date = date;
         this.layers = layers;
     }
 
-    public String getId() {
-        return Id;
-    }
-
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 

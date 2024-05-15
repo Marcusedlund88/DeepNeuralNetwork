@@ -1,21 +1,18 @@
 package com.example.neuralnetwork.Validation;
 
-
+import com.example.neuralnetwork.Data.RollbackRequest;
 import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Exceptions.ValidationException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-@Component
-public class TrainingParamValidator implements Validator {
-
-    private final Validator trainingParamValidator;
-
-    public TrainingParamValidator(Validator trainingParamValidator){
-        this.trainingParamValidator = trainingParamValidator;
-    }
+@Component("trainingParamValidator")
+public class TrainingParamValidator extends CustomValidator<TrainingParam> {
 
     @Override
     public boolean supports(Class clazz) {
@@ -27,12 +24,9 @@ public class TrainingParamValidator implements Validator {
 
         try {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "inputCase", "field.required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberOfTrainingObjects", "field.required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberOfEpochs", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "learnRate", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberOfLayers", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "hiddenLayerWidth", "field.required");
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberOfOutputNodes", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "shouldBuildNetwork", "field.required");
 
             TrainingParam trainingParam = (TrainingParam) target;
@@ -48,7 +42,12 @@ public class TrainingParamValidator implements Validator {
 
     @Override
     public Errors validateObject(Object target) {
-        return Validator.super.validateObject(target);
+        return super.validateObject(target);
+    }
+
+    @Override
+    protected Validator getValidator() {
+        return this;
     }
 
     private boolean isValidTrainingRequest(TrainingParam trainingParam){
@@ -58,12 +57,9 @@ public class TrainingParamValidator implements Validator {
         }
         return trainingParam != null &&
                 (trainingParam.getInputCase() == TrainingParam.InputCase.CASE_FIVE|| trainingParam.getInputCase() == TrainingParam.InputCase.CASE_TEN) &&
-                trainingParam.getNumberOfTrainingObjects() != 0 &&
-                trainingParam.getNumberOfEpochs() != 0 &&
                 trainingParam.getLearnRate() != 0 &&
                 trainingParam.getNumberOfLayers() != 0 &&
                 trainingParam.getHiddenLayerWidth() != 0 &&
-                trainingParam.getNumberOfOutputNodes() != 0 &&
                 trainingParam.getShouldBuildNetwork() != null;
     }
 }

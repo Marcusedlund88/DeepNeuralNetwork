@@ -32,7 +32,7 @@ public class Neuron{
     private double[] weightedOutput;
     @Expose
     private double[] activatedOutput;
-    private final MathOperations mathOperations;
+    private MathOperations mathOperations;
 
     public Neuron(int edgesIn, int edgesOut, int inputLength, NeuronType neuronType, MathOperations mathOperations){
         this.edgesIn = edgesIn;
@@ -98,5 +98,9 @@ public class Neuron{
 
     public int getEdgesIn(){
         return edgesIn;
+    }
+
+    public void setMathOperations(MathOperations mathOperations){
+        this.mathOperations = mathOperations;
     }
 }
