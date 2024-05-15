@@ -69,4 +69,24 @@ public class TrainingParam {
     public void setColumns(int columns) {
         this.columns = columns;
     }
+
+    public void setNumberOfOutputNodes(int numberOfOutputNodes) {
+        this.numberOfOutputNodes = numberOfOutputNodes;
+    }
+
+    public void setNumberOfTrainingObjects(int numberOfTrainingObjects) {
+        this.numberOfTrainingObjects = numberOfTrainingObjects;
+    }
+
+    public void setNumberOfEpochs(int numberOfEpochs) {
+        this.numberOfEpochs = numberOfEpochs;
+    }
+
+    public void setNumberOfLayers(int numberOfLayers) {
+        this.numberOfLayers = numberOfLayers;
+    }
+
+    public void setHiddenLayerWidth(int hiddenLayerWidth) {
+        this.hiddenLayerWidth = hiddenLayerWidth;
+    }
 }

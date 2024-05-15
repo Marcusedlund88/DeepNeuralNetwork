@@ -83,9 +83,31 @@ public class NeuralNetwork{
         }
     }
 
-    public void rollBackNeuralNetwork(Layer[]  layers){
-        buildNetwork(layers.length,layers[1].getNumberOfNeurons(),layers[layers.length-1].getNumberOfNeurons(),
-        layers[0].getNeurons()[0].getInput()[0].length, layers.length, layers[0].getNeurons()[0].getInput()[0].length);
+    public void rollbackNetwork(Layer[] layers) throws CreateEmptyNetworkException{
+        if(layers != null){
+            TrainingParam trainingParam = new TrainingParam();
+            trainingParam.setNumberOfOutputNodes(layers[layers.length-1].getNumberOfNeurons());
+            trainingParam.setRows(layers[0].getNumberOfNeurons());
+            trainingParam.setColumns(1);
+            trainingParam.setHiddenLayerWidth(layers[1].getNumberOfNeurons()-1);
+            trainingParam.setNumberOfLayers(layers.length);
+            this.shouldBuildNetwork = true;
+
+            try {
+                setNeuralNetwork(trainingParam);
+                this.layers = layers;
+
+                for(Layer layer : layers){
+                    layer.setMathOperations(mathOperations);
+                    for(Neuron neuron : layer.getNeurons()){
+                        neuron.setMathOperations(mathOperations);
+                    }
+                }
+            }
+            catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+                throw new CreateEmptyNetworkException("Error creating network: "+ e.getCause());
+            }
+        }
     }
 
     /**
@@ -175,12 +197,15 @@ public class NeuralNetwork{
                 layerInput = layer.getActivatedLayerOutput();
             }
 
-            System.out.println(expectedValue[0][0]);
+            if(expectedValue != null){
+                System.out.println(expectedValue[0][0]);
+                mse = Math.sqrt(Math.pow((predictedValue[0][0] - expectedValue[0][0]), 2));
+            }
+
             double value = predictedValue[0][0];
             double roundedValue = Math.round(value * 10.0) / 10.0;
             System.out.println(roundedValue);
             System.out.println();
-            mse = Math.sqrt(Math.pow((predictedValue[0][0] - expectedValue[0][0]), 2));
         }
         catch (Exception e){
             throw new PropagationException("An " + e.getCause() +  " occurred during forward propagation");
@@ -487,30 +512,6 @@ public class NeuralNetwork{
             return;
         }
         shouldBuildNetwork = true;
-    }
-
-    public void rollBackPreviousNetwork(){
-        String filePath = "C:\\Users\\Min Dator\\Desktop\\Marcus\\MatchMaker\\NeuralNetwork\\neuralnetwork/myNetwork.json";
-
-        try {
-            // Step 2: Read file contents
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-
-            Gson gson = new Gson();
-            int count = 0;
-
-            while ((line = bufferedReader.readLine()) != null) {
-                Layer layer = gson.fromJson(line, Layer.class);
-                layers[count] = layer;
-                count++;
-            }
-            bufferedReader.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setPredictedValue(double[][] predictedValue){

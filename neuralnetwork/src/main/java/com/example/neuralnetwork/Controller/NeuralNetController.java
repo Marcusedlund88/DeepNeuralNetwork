@@ -2,8 +2,12 @@ package com.example.neuralnetwork.Controller;
 
 import com.example.neuralnetwork.Data.*;
 import com.example.neuralnetwork.Service.NeuralNetService;
+import com.example.neuralnetwork.Validation.CustomValidator;
+import com.example.neuralnetwork.Validation.RollbackRequestValidator;
 import com.example.neuralnetwork.Validation.TrainingParamValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,11 +25,18 @@ public class NeuralNetController {
 
     private final NeuralNetService neuralNetService;
     private final MongoTemplate mongoTemplate;
-    private final TrainingParamValidator trainingParamValidator;
 
-    public NeuralNetController(NeuralNetService neuralNetService, TrainingParamValidator trainingParamValidator, MongoTemplate mongoTemplate){
+    private final CustomValidator<TrainingParam> trainingParamValidator;
+    private final CustomValidator<RollbackRequest> rollbackRequestValidator;
+
+    public NeuralNetController(NeuralNetService neuralNetService,
+                               @Qualifier("trainingParamValidator") CustomValidator<TrainingParam> trainingParamValidator,
+                               @Qualifier("rollbackRequestValidator") CustomValidator<RollbackRequest> rollbackRequestValidator,
+                               MongoTemplate mongoTemplate){
+
         this.neuralNetService = neuralNetService;
         this.trainingParamValidator = trainingParamValidator;
+        this.rollbackRequestValidator = rollbackRequestValidator;
         this.mongoTemplate = mongoTemplate;
     }
 
@@ -50,8 +61,14 @@ public class NeuralNetController {
     }
 
     @GetMapping("/loadNetwork")
-    public ResponseEntity<String> loadNetwork(){
-        String response = neuralNetService.loadNetwork();
+    public ResponseEntity<String> loadNetwork(@RequestBody @Validated RollbackRequest rollbackRequest, BindingResult bindingResult){
+
+        rollbackRequestValidator.validate(rollbackRequest, bindingResult);
+        if (bindingResult.hasErrors()) {
+            // If there are validation errors, return a response indicating failure
+            return ResponseEntity.badRequest().body("Validation failed: " + bindingResult.getAllErrors());
+        }
+        String response = neuralNetService.loadNetwork(rollbackRequest);
         return ResponseEntity.ok(response);
     }
 }

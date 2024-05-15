@@ -33,7 +33,7 @@ public class Layer {
     private Layer nextLayer;
     @Expose
     private int dataLength;
-    private final MathOperations mathOperations;
+    private MathOperations mathOperations;
 
     public Layer(int numberOfNodes, int dataLength, LayerType layerType, MathOperations mathOperations){
         this.numberOfNeurons = numberOfNodes;
@@ -106,5 +106,9 @@ public class Layer {
 
     public void setNextLayer(Layer nextLayer) {
         this.nextLayer = nextLayer;
+    }
+
+    public void setMathOperations(MathOperations mathOperations){
+        this.mathOperations = mathOperations;
     }
 }
