@@ -10,6 +10,7 @@ public class TrainingParam {
         CASE_TEN,
         CASE_REBUILD
     }
+
     private int rows;
     private int columns;
     private InputCase inputCase;
@@ -21,6 +22,7 @@ public class TrainingParam {
     private int hiddenLayerWidth;
     private int numberOfOutputNodes;
     private Boolean shouldBuildNetwork;
+    private Boolean isNewBatch;
 
     public int getNumberOfTrainingObjects() {
         return numberOfTrainingObjects;
@@ -88,5 +90,13 @@ public class TrainingParam {
 
     public void setHiddenLayerWidth(int hiddenLayerWidth) {
         this.hiddenLayerWidth = hiddenLayerWidth;
+    }
+
+    public Boolean getIsNewBatch() {
+        return isNewBatch;
+    }
+
+    public void setIsNewBatch(Boolean isNewBatch) {
+        this.isNewBatch = isNewBatch;
     }
 }

@@ -14,8 +14,8 @@ public class TrainingStrategy {
     protected boolean isInstantiated = false;
 
     protected final int outputNodes = 1;
-    protected final int numberOfTrainingObjects = 1000;
-    protected final int numberOfEpochs = 2000;
+    protected final int numberOfTrainingObjects = 32;
+    protected final int numberOfEpochs = 20000;
 
     public TrainingStrategy(NeuralNetwork neuralNetwork, TrainingParam trainingParam) {
         this.trainingParam = trainingParam;
@@ -42,7 +42,7 @@ public class TrainingStrategy {
                 setTrainingList(trainingParam.getNumberOfTrainingObjects());
                 neuralNetwork.setTrainingObjects(trainingObjects);
             } else {
-                if (trainingParam.getInputCase() == neuralNetwork.getCachedInputCase()) {
+                if (trainingParam.getInputCase() == neuralNetwork.getCachedInputCase() && !trainingParam.getIsNewBatch()) {
                     trainingObjects = neuralNetwork.getTrainingObjects();
                 } else {
                     neuralNetwork.setCachedInputCase(trainingParam.getInputCase());
@@ -68,8 +68,10 @@ public class TrainingStrategy {
                     mse = mse / trainingObjects.size();
 
                     if (mse > neuralNetwork.getCacheMse()) {
-                        System.out.println("Abort training");
-                        break;
+                        //System.out.println("Abort training");
+                        System.out.println("");
+                        System.out.println("");
+                        //break;
                     }
                     neuralNetwork.setCacheMse(mse);
                 } catch (PropagationException e) {
