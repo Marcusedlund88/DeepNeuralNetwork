@@ -15,109 +15,90 @@ class StaticMathClassTest {
 
     @org.junit.jupiter.api.Test
     void fillVectorWithSameValue() {
+        int size = 5;
+        int value = 1;
+        double[] newVector = mathOperation.fillVectorWithSameValue(5,1);
+
+        for(int i = 0; i < newVector.length; i++){
+            assertEquals(1, newVector[i]);
+        }
+        assertEquals(5, newVector.length);
     }
 
     @org.junit.jupiter.api.Test
     void fillMatrixWithSameValue() {
-    }
 
-    @org.junit.jupiter.api.Test
-    void generateRandomBias() {
-    }
+        int rows = 5;
+        int columns = 5;
+        int value = 1;
 
-    @org.junit.jupiter.api.Test
-    void updateBias() {
+        double[][] matrix = mathOperation.fillMatrixWithSameValue(rows, columns, value);
+
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                assertEquals(1, matrix[i][j]);
+            }
+        }
+        assertEquals(5, matrix.length);
+        assertEquals(5, matrix[0].length);
     }
 
     @org.junit.jupiter.api.Test
     void vectorMatrixMultiplication() {
+
+        double[] vector = {2,2,2};
+        double[][] matrix = {{3,3,3},{3,3,3},{3,3,3}};
+
+        double[] newVector = mathOperation.vectorMatrixMultiplication(vector, matrix);
+        for(int i = 0; i < newVector.length; i++){
+            assertEquals(18, newVector[i]);
+        }
+        assertEquals(3,newVector.length);
+
     }
 
     @org.junit.jupiter.api.Test
     void vectorScalarMultiplication() {
-    }
+        double[] vector = {2,2,2};
+        int scalar = 5;
 
-    @org.junit.jupiter.api.Test
-    void vectorMultiplication() {
+        double[] newVector = mathOperation.vectorScalarMultiplication(scalar, vector);
+
+        for(int i = 0; i < newVector.length; i++){
+            assertEquals(10, newVector[i]);
+        }
+        assertEquals(3, newVector.length);
     }
 
     @org.junit.jupiter.api.Test
     void makeZeroVector() {
+        double[] newVector = mathOperation.makeZeroVector(5);
+        for(int i = 0; i < newVector.length; i++){
+            assertEquals(0, newVector[i]);
+        }
+
+        assertEquals(5, newVector.length);
     }
 
     @org.junit.jupiter.api.Test
     void makeZeroMatrix() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void addMatrix() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void getPrediction() {
+        double[][] matrix = mathOperation.makeZeroMatrix(5,5);
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                assertEquals(0, matrix[i][j]);
+            }
+        }
+        assertEquals(5, matrix.length);
+        assertEquals(5, matrix[0].length);
     }
 
     @org.junit.jupiter.api.Test
     void transposeMatrix() {
-    }
+        double[][] matrix = {{1,1,1},{2,2,2},{3,3,3}};
+        double[][] transposedMatrix = mathOperation.transposeMatrix(matrix);
 
-    @org.junit.jupiter.api.Test
-    void testGetPrediction() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void dC_dW_Output() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void dC_dW_hidden() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void weightedSum() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void reluActivateNeuron() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void generateStartingWeights() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void outputSigmoidActivation() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void dC_dA() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void dA_dZ_sigmoid() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void dA_dZ_relu() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void getUpdatedWeights() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void vectorAddition() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void vectorTrainingBigFiveCompability() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void createRandomTrainingInput() {
-    }
-
-    @org.junit.jupiter.api.Test
-    void normalizeInput() {
+        assertEquals(1, transposedMatrix[0][0]);
+        assertEquals(2, transposedMatrix[0][1]);
+        assertEquals(3, transposedMatrix[0][2]);
     }
 }

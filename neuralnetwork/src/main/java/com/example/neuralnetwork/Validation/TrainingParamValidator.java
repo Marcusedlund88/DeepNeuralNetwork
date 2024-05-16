@@ -28,6 +28,8 @@ public class TrainingParamValidator extends CustomValidator<TrainingParam> {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numberOfLayers", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "hiddenLayerWidth", "field.required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "shouldBuildNetwork", "field.required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "isNewBatch","field.required");
+
 
             TrainingParam trainingParam = (TrainingParam) target;
 
@@ -60,6 +62,7 @@ public class TrainingParamValidator extends CustomValidator<TrainingParam> {
                 trainingParam.getLearnRate() != 0 &&
                 trainingParam.getNumberOfLayers() != 0 &&
                 trainingParam.getHiddenLayerWidth() != 0 &&
-                trainingParam.getShouldBuildNetwork() != null;
+                trainingParam.getShouldBuildNetwork() != null &&
+                trainingParam.getIsNewBatch() != null;
     }
 }

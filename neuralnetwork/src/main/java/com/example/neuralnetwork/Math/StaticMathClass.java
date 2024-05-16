@@ -86,12 +86,18 @@ public class StaticMathClass implements MathOperations{
     public double[] vectorMatrixMultiplication(double[] vector, double[][] matrix){
         double[] temp = new double[matrix.length];
 
-        for (int i = 0; i < temp.length; i++){
-            for(int j = 0; j < matrix[0].length; j++){
-                temp[i] += vector[j]*matrix[i][j];
+        try {
+            for (int i = 0; i < temp.length; i++) {
+                for (int j = 0; j < matrix[0].length; j++) {
+                    temp[i] += vector[j] * matrix[i][j];
+                }
             }
+            return temp;
         }
-        return temp;
+        catch (Exception e){
+            System.out.println("size mismatch");
+        }
+        return null;
     }
 
     /**

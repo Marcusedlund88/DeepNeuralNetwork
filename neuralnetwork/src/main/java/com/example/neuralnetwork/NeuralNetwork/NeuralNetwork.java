@@ -77,6 +77,7 @@ public class NeuralNetwork{
                         trainingParam.getNumberOfLayers(),
                         trainingParam.getRows());
             }
+            this.learnRate = trainingParam.getLearnRate();
         }
         catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             throw new CreateEmptyNetworkException("Error creating network: "+ e.getCause());

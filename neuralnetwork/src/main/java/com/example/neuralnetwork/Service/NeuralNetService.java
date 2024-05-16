@@ -68,14 +68,14 @@ public class NeuralNetService {
             case CASE_FIVE -> {
                 TrainingStrategy caseFiveTrainingStrategy = new CaseFiveTrainingStrategy(neuralNetwork, trainingParam);
                 caseFiveTrainingStrategy.initiateNeuralNetwork(trainingParam);
-                importTo("CaseFive", saveNeuralNetwork(neuralNetwork));
                 caseFiveTrainingStrategy.startTraining();
+                importTo("CaseFive", saveNeuralNetwork(neuralNetwork));
             }
             case CASE_TEN -> {
                 TrainingStrategy caseTenTrainingStrategy = new CaseTenTrainingStrategy(neuralNetwork, trainingParam);
                 caseTenTrainingStrategy.initiateNeuralNetwork(trainingParam);
-                importTo("CaseTen", saveNeuralNetwork(neuralNetwork));
                 caseTenTrainingStrategy.startTraining();
+                importTo("CaseTen", saveNeuralNetwork(neuralNetwork));
             }
         }
     }
