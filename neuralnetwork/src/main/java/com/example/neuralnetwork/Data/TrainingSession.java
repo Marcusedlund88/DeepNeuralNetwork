@@ -27,4 +27,12 @@ public class TrainingSession {
     public Layer[] getLayers() {
         return layers;
     }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setLayers(Layer[] layers) {
+        this.layers = layers;
+    }
 }
