@@ -15,7 +15,7 @@ public class TrainingStrategy {
 
     protected final int outputNodes = 1;
     protected final int numberOfTrainingObjects = 32;
-    protected final int numberOfEpochs = 20000;
+    protected final int numberOfEpochs = 5000;
 
     public TrainingStrategy(NeuralNetwork neuralNetwork, TrainingParam trainingParam) {
         this.trainingParam = trainingParam;

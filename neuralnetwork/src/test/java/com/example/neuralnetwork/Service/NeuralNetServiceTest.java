@@ -27,12 +27,14 @@ class NeuralNetServiceTest {
     @MockBean
     private static NeuralNetService neuralNetService;
     @MockBean
-    private static MongoTemplate mongoTemplate;
+    private static MongoDBService mongoDBService;
+    @MockBean
+    private static SerializationService serializationService;
     private TrainingParam mockParam;
 
     @BeforeAll
     static void setUp() {
-        neuralNetService = new NeuralNetService(neuralNetwork, mathOperations, mongoTemplate);
+        neuralNetService = new NeuralNetService(neuralNetwork, mathOperations, mongoDBService, serializationService);
     }
 
     @BeforeEach
