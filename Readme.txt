@@ -20,3 +20,7 @@ In terminal use:
 - use <db name>
 - db.createCollection("mycollection")
 - show collections
+
+Use docker-compose.yml:
+# docker compose up --build -d
+
