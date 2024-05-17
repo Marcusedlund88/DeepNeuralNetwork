@@ -29,6 +29,10 @@ dependencies {
     implementation group: 'org.mongodb', name: 'mongodb-driver-core', version: '5.1.0'
 }
 
+tasks.named('bootJar') {
+    exclude('com/example/neuralnetwork/Controller/TrainingController.class')
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
