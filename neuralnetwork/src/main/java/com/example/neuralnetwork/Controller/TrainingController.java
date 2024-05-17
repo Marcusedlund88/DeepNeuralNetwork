@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Slf4j
 @RequestMapping("api/v1")
-public class NeuralNetController {
+public class TrainingController {
 
     private final NeuralNetService neuralNetService;
     //private final MongoTemplate mongoTemplate;
@@ -25,27 +25,15 @@ public class NeuralNetController {
     private final CustomValidator<TrainingParam> trainingParamValidator;
     private final CustomValidator<RollbackRequest> rollbackRequestValidator;
 
-    public NeuralNetController(NeuralNetService neuralNetService,
-                               @Qualifier("trainingParamValidator") CustomValidator<TrainingParam> trainingParamValidator,
-                               @Qualifier("rollbackRequestValidator") CustomValidator<RollbackRequest> rollbackRequestValidator,
-                               MongoTemplate mongoTemplate){
+    public TrainingController(NeuralNetService neuralNetService,
+                              @Qualifier("trainingParamValidator") CustomValidator<TrainingParam> trainingParamValidator,
+                              @Qualifier("rollbackRequestValidator") CustomValidator<RollbackRequest> rollbackRequestValidator,
+                              MongoTemplate mongoTemplate){
 
         this.neuralNetService = neuralNetService;
         this.trainingParamValidator = trainingParamValidator;
         this.rollbackRequestValidator = rollbackRequestValidator;
         //this.mongoTemplate = mongoTemplate;
-    }
-
-    @GetMapping("/welcome")
-    public ResponseEntity<String> welcome(){
-        return ResponseEntity.ok("Welcome");
-    }
-
-    //TODO: Access level all
-    @GetMapping("/request")
-    public ResponseEntity<String> SendRequest(@RequestBody InputObject inputObject){
-
-        return ResponseEntity.ok(neuralNetService.verifyMatch(inputObject));
     }
 
     //TODO: Access level admin only
