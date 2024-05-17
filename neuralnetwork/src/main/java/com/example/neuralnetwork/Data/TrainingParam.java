@@ -52,6 +52,10 @@ public class TrainingParam {
         return shouldBuildNetwork;
     }
 
+    public void setShouldBuildNetwork(Boolean shouldBuildNetwork){
+        this.shouldBuildNetwork = shouldBuildNetwork;
+    }
+
     public InputCase getInputCase(){
         return inputCase;
     }

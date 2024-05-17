@@ -92,7 +92,7 @@ public class NeuralNetwork{
             trainingParam.setColumns(1);
             trainingParam.setHiddenLayerWidth(layers[1].getNumberOfNeurons()-1);
             trainingParam.setNumberOfLayers(layers.length);
-            this.shouldBuildNetwork = true;
+            trainingParam.setShouldBuildNetwork(true);
 
             try {
                 setNeuralNetwork(trainingParam);
