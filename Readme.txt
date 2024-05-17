@@ -4,6 +4,16 @@ Create image from Powershell:
 # docker build -t <image-name> 
 
 Create container from Powershell:
+# docker run -d `
+>>     --name <image-name> `
+>>     --network <network-name> `
+>>     -p 8080:8080 `
+>>     <image-name> docker run -d `
+>>     --name <container-name> `
+>>     -- <network-name> `
+>>     -p 8080:8080 `
+>>     <image-name>
+
 # docker run -d --name <container-name> --network <network-name> <image-name> .
 
 Make mongoDB using docker:
