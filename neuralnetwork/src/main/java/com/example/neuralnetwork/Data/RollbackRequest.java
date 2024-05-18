@@ -15,4 +15,12 @@ public class RollbackRequest {
     public String getId() {
         return id;
     }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

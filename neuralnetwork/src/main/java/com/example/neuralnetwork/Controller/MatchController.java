@@ -3,6 +3,7 @@ package com.example.neuralnetwork.Controller;
 import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Data.RollbackRequest;
 import com.example.neuralnetwork.Data.TrainingParam;
+import com.example.neuralnetwork.Exceptions.PropagationException;
 import com.example.neuralnetwork.Service.NeuralNetService;
 import com.example.neuralnetwork.Validation.CustomValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,11 @@ public class MatchController {
     //TODO: Access level all
     @GetMapping("/request")
     public ResponseEntity<String> SendRequest(@RequestBody InputObject inputObject){
-
-        return ResponseEntity.ok(neuralNetService.verifyMatch(inputObject));
+        try {
+            return ResponseEntity.ok(neuralNetService.verifyMatch(inputObject));
+        }
+        catch(Exception e){
+            return ResponseEntity.ok("Ooops something went wrong");
+        }
     }
 }

@@ -1,14 +1,13 @@
 package com.example.neuralnetwork.Service;
 
 import com.example.neuralnetwork.Data.RollbackRequest;
-import com.example.neuralnetwork.Data.TrainingSession;
-import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import com.mongodb.MongoBulkWriteException;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.List;
 public class MongoDBService {
 
     private final MongoTemplate mongoTemplate;
+    private String collection = "CaseTen";
 
     @Autowired
     public MongoDBService(MongoTemplate mongoTemplate){
@@ -64,9 +64,23 @@ public class MongoDBService {
         return "Network load successful";
     }
 
-    public Document fetchNeuralNetwork(RollbackRequest rollbackRequest){
+    public Document fetchNeuralNetworkByID(RollbackRequest rollbackRequest){
         try {
             return mongoTemplate.findById(rollbackRequest.getId(), Document.class, rollbackRequest.getCollection());
+        }
+        catch (Exception e){
+            System.out.println("Error fetching network");
+        }
+        return null;
+    }
+
+    public Document fetchLatestNeuralNetwork(){
+        Query query = new Query();
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+        query.limit(1);
+
+        try {
+            return mongoTemplate.findOne(query, Document.class, collection);
         }
         catch (Exception e){
             System.out.println("Error fetching network");
