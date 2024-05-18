@@ -68,15 +68,10 @@ public class TrainingStrategy {
                     mse = mse / trainingObjects.size();
 
                     if (mse > neuralNetwork.getCacheMse()) {
-                        //System.out.println("Abort training");
-                        System.out.println("");
-                        System.out.println("");
-                        //break;
                     }
                     neuralNetwork.setCacheMse(mse);
                 } catch (PropagationException e) {
                     System.out.println(e.getMessage());
-                    System.out.println("Error occurred");
                     break;
                 }
             }

@@ -72,19 +72,24 @@ public class NeuralNetService {
             neuralNetwork.setCacheMse(999);
         }
 
-        switch(trainingParam.getInputCase()) {
-            case CASE_FIVE -> {
-                TrainingStrategy caseFiveTrainingStrategy = new CaseFiveTrainingStrategy(neuralNetwork, trainingParam);
-                caseFiveTrainingStrategy.initiateNeuralNetwork(trainingParam);
-                caseFiveTrainingStrategy.startTraining();
-                mongoDBService.importTo("CaseFive", serializationService.saveNeuralNetwork(neuralNetwork));
+        try{
+            switch(trainingParam.getInputCase()) {
+                case CASE_FIVE -> {
+                    TrainingStrategy caseFiveTrainingStrategy = new CaseFiveTrainingStrategy(neuralNetwork, trainingParam);
+                    caseFiveTrainingStrategy.initiateNeuralNetwork(trainingParam);
+                    caseFiveTrainingStrategy.startTraining();
+                    mongoDBService.importTo("CaseFive", serializationService.saveNeuralNetwork(neuralNetwork));
+                }
+                case CASE_TEN -> {
+                    TrainingStrategy caseTenTrainingStrategy = new CaseTenTrainingStrategy(neuralNetwork, trainingParam);
+                    caseTenTrainingStrategy.initiateNeuralNetwork(trainingParam);
+                    caseTenTrainingStrategy.startTraining();
+                    mongoDBService.importTo("CaseTen", serializationService.saveNeuralNetwork(neuralNetwork));
+                }
             }
-            case CASE_TEN -> {
-                TrainingStrategy caseTenTrainingStrategy = new CaseTenTrainingStrategy(neuralNetwork, trainingParam);
-                caseTenTrainingStrategy.initiateNeuralNetwork(trainingParam);
-                caseTenTrainingStrategy.startTraining();
-                mongoDBService.importTo("CaseTen", serializationService.saveNeuralNetwork(neuralNetwork));
-            }
+        }
+        catch(Exception e){
+            System.out.println("Error during training");
         }
     }
 
