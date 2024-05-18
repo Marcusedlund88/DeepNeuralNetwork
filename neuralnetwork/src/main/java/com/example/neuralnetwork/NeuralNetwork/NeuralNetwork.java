@@ -104,6 +104,16 @@ public class NeuralNetwork{
                         neuron.setMathOperations(mathOperations);
                     }
                 }
+                for(int i = 0; i < layers.length; i++){
+                    if(layers[i].layerType != Layer.LayerType.OutputLayer){
+                        layers[i].setNextLayer(layers[i+1]);
+                    }
+                }
+                for(int i = layers.length-1; i >= 0; i--){
+                    if(layers[i].layerType != Layer.LayerType.InputLayer){
+                        layers[i].setPreviousLayer(layers[i-1]);
+                    }
+                }
             }
             catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
                 throw new CreateEmptyNetworkException("Error creating network: "+ e.getCause());
