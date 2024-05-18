@@ -5,12 +5,14 @@ import com.example.neuralnetwork.Data.RollbackRequest;
 import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Data.TrainingSession;
 import com.example.neuralnetwork.Exceptions.PropagationException;
+import com.example.neuralnetwork.Math.BigFiveCalculator;
 import com.example.neuralnetwork.Math.MathOperations;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import com.example.neuralnetwork.Training.CaseFiveTrainingStrategy;
 import com.example.neuralnetwork.Training.CaseTenTrainingStrategy;
 import com.example.neuralnetwork.Training.TrainingStrategy;
 import com.google.gson.Gson;
+import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,16 @@ public class NeuralNetService {
         this.serializationService = serializationService;
     }
 
+    @PostConstruct
+    public void initializedLatestApprovedNetwork(){
+        try {
+            fetchLatestNetwork();
+        }
+        catch (Exception e){
+            System.out.println("Error fetching latest network");
+        }
+    }
+
     public String verifyMatch(InputObject inputObject){
         if(isValidRequest(inputObject)){
             double[][] inputProduct = setInputForm(inputObject.getUserOneInput(),inputObject.getUserTwoInput());
@@ -45,7 +57,8 @@ public class NeuralNetService {
                     neuralNetwork.setInput(inputProduct);
                     neuralNetwork.propagateForward();
                     double matchValue = neuralNetwork.getPredictedValuePercent();
-                    return String.valueOf(matchValue);
+                    double actualValue = BigFiveCalculator.bigFiveCompability(inputProduct, 10);
+                    return String.valueOf("Predicted value: " + matchValue + " actual value: "+ actualValue);
                 } catch (PropagationException e) {
                     System.out.println("Error during forward propagation");
                 }
@@ -111,7 +124,19 @@ public class NeuralNetService {
     }
 
    public String loadNetwork(RollbackRequest rollbackRequest){
-        Document document = mongoDBService.fetchNeuralNetwork(rollbackRequest);
+        Document document = mongoDBService.fetchNeuralNetworkByID(rollbackRequest);
+        try{
+            TrainingSession trainingSession = serializationService.deserializeTrainingSession(document);
+            neuralNetwork.rollbackNetwork(trainingSession.getLayers());
+        }
+        catch (Exception e){
+            return "Error during deserialization";
+        }
+        return "Network load successful";
+    }
+
+    private String fetchLatestNetwork(){
+        Document document = mongoDBService.fetchLatestNeuralNetwork();
         try{
             TrainingSession trainingSession = serializationService.deserializeTrainingSession(document);
             neuralNetwork.rollbackNetwork(trainingSession.getLayers());
