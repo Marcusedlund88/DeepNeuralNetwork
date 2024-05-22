@@ -42,4 +42,5 @@ public interface MathOperations{
         double[][] dC_dA(double[][] predictedValue, double[][] expectedValue);
 
         double[] vectorAddition(double[] vector1, double[] vector2);
+
 }

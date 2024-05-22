@@ -4,6 +4,7 @@ import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Data.RollbackRequest;
 import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Exceptions.PropagationException;
+import com.example.neuralnetwork.Math.BigFiveCalculator;
 import com.example.neuralnetwork.Service.NeuralNetService;
 import com.example.neuralnetwork.Validation.CustomValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,18 @@ public class MatchController {
     public ResponseEntity<String> SendRequest(@RequestBody InputObject inputObject){
         try {
             return ResponseEntity.ok(neuralNetService.verifyMatch(inputObject));
+        }
+        catch(Exception e){
+            return ResponseEntity.ok("Ooops something went wrong");
+        }
+    }
+    //TODO: Access level all
+    @GetMapping("/getRealValue")
+    public ResponseEntity<String> GetRealValue(@RequestBody InputObject inputObject){
+        try {
+            double[][] input = BigFiveCalculator.makeBigFiveForm(inputObject.getUserOneInput(), inputObject.getUserTwoInput());
+            double answer = BigFiveCalculator.bigFiveCompability(input, 10);
+            return ResponseEntity.ok(Double.toString(answer));
         }
         catch(Exception e){
             return ResponseEntity.ok("Ooops something went wrong");

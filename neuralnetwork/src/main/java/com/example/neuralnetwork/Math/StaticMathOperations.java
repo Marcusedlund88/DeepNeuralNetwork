@@ -3,7 +3,7 @@ package com.example.neuralnetwork.Math;
 import java.util.Arrays;
 import java.util.Random;
 
-public class StaticMathClass implements MathOperations{
+public class StaticMathOperations implements MathOperations{
 
     /**
      * Fills a vector with the same specified value.

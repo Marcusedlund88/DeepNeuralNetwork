@@ -4,7 +4,7 @@ import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Exceptions.CreateEmptyNetworkException;
 import com.example.neuralnetwork.Exceptions.PropagationException;
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.example.neuralnetwork.Math.StaticMathOperations;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class NeuralNetworkTest {
     @BeforeAll
     static void setUp() {
 
-        mathOperations = new StaticMathClass();
+        mathOperations = new StaticMathOperations();
 
         neuralNetwork = new NeuralNetwork(mathOperations);
     }

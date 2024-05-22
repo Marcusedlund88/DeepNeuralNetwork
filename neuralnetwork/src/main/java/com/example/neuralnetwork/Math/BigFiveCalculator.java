@@ -42,8 +42,8 @@ public final class BigFiveCalculator {
         return Math.round(sum * roundedBy) / roundedBy;
     }
 
-    private static double getMatchValue(int index, double ratio){
-        switch (index){
+    private static double getMatchValue(int index, double ratio) {
+        switch (index) {
             case 0: // Openness
             case 1: // Conscientiousness
             case 3: // Agreeableness
@@ -67,4 +67,20 @@ public final class BigFiveCalculator {
         }
         return 0;
     }
+
+    public static double[][] makeBigFiveForm(double[] vector1, double[] vector2) {
+        double[][] output = new double[vector1.length + vector2.length][1];
+
+        int counter = 0;
+        for (double value : vector1) {
+            output[counter][0] = vector1[counter];
+            counter++;
+        }
+        for (double value : vector2) {
+            output[counter][0] = vector1[counter - vector1.length];
+            counter++;
+        }
+        return output;
+    }
 }
+

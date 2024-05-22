@@ -2,7 +2,7 @@ package com.example.neuralnetwork.Configuration;
 
 import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.example.neuralnetwork.Math.StaticMathOperations;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ class NeuralNetConfigTest {
     @Test
     void mathOperations() {
         assertNotNull(mathOperations);
-        assertTrue(mathOperations instanceof StaticMathClass);
+        assertTrue(mathOperations instanceof StaticMathOperations);
     }
 
     @Test

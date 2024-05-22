@@ -2,18 +2,17 @@ package com.example.neuralnetwork.Configuration;
 
 import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
+import com.example.neuralnetwork.Math.StaticMathOperations;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class NeuralNetConfig {
 
     @Bean
     public MathOperations mathOperations() {
-        return new StaticMathClass();
+        return new StaticMathOperations();
     }
 
     @Bean

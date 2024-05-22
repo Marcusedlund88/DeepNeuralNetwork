@@ -4,6 +4,7 @@ import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Data.RollbackRequest;
 import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Data.TrainingSession;
+import com.example.neuralnetwork.Exceptions.CreateEmptyNetworkException;
 import com.example.neuralnetwork.Exceptions.PropagationException;
 import com.example.neuralnetwork.Math.BigFiveCalculator;
 import com.example.neuralnetwork.Math.MathOperations;
@@ -111,17 +112,7 @@ public class NeuralNetService {
                 return output;
             }
             if(neuralNetwork.getLayers()[0].getNumberOfNeurons() == 10){
-                double[][] output = new double[vector1.length + vector2.length][1];
-
-                int counter  = 0;
-                for(double value : vector1){
-                    output[counter][0] = vector1[counter];
-                    counter++;
-                }
-                for(double value : vector2){
-                    output[counter][0] = vector1[counter-vector1.length];
-                    counter++;
-                }
+                double[][] output = BigFiveCalculator.makeBigFiveForm(vector1,vector2);
                 return output;
             }
         }

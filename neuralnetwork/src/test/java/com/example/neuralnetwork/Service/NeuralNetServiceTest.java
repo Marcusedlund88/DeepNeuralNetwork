@@ -1,18 +1,15 @@
 package com.example.neuralnetwork.Service;
 
+import com.example.neuralnetwork.Data.InputObject;
 import com.example.neuralnetwork.Data.TrainingParam;
 import com.example.neuralnetwork.Math.MathOperations;
-import com.example.neuralnetwork.Math.StaticMathClass;
 import com.example.neuralnetwork.NeuralNetwork.NeuralNetwork;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,13 +21,14 @@ class NeuralNetServiceTest {
     private static MathOperations mathOperations;
     @Mock
     private static NeuralNetwork neuralNetwork;
-    @MockBean
+    @Mock
     private static NeuralNetService neuralNetService;
-    @MockBean
+    @Mock
     private static MongoDBService mongoDBService;
-    @MockBean
+    @Mock
     private static SerializationService serializationService;
     private TrainingParam mockParam;
+    private InputObject inputObject;
 
     @BeforeAll
     static void setUp() {
@@ -47,10 +45,22 @@ class NeuralNetServiceTest {
         when(mockParam.getHiddenLayerWidth()).thenReturn(8);
         when(mockParam.getLearnRate()).thenReturn(0.05);
         when(mockParam.getShouldBuildNetwork()).thenReturn(true);
+
+        double[] vector1 = {1,1,1,1,1};
+        double[] vector2 = {0,0,0,0,0};
+
+        inputObject = mock(InputObject.class);
+        when(inputObject.getUserOneInput()).thenReturn(vector1);
+        when(inputObject.getUserTwoInput()).thenReturn(vector2);
+        when(inputObject.getUserOneId()).thenReturn("A");
+        when(inputObject.getUserTwoId()).thenReturn("B");
+
     }
 
     @Test
     void verifyMatch() {
+        String response = neuralNetService.verifyMatch(inputObject);
+        assertNotEquals("Error occurred", response);
     }
 
     @Test

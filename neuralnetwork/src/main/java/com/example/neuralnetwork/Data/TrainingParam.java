@@ -103,4 +103,16 @@ public class TrainingParam {
     public void setIsNewBatch(Boolean isNewBatch) {
         this.isNewBatch = isNewBatch;
     }
+
+    public void setInputCase(InputCase inputCase) {
+        this.inputCase = inputCase;
+    }
+
+    public void setLearnRate(double learnRate) {
+        this.learnRate = learnRate;
+    }
+
+    public void setNewBatch(Boolean newBatch) {
+        isNewBatch = newBatch;
+    }
 }

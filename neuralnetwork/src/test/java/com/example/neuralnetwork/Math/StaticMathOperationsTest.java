@@ -4,13 +4,13 @@ import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StaticMathClassTest {
+class StaticMathOperationsTest {
 
     private static MathOperations mathOperation;
 
     @BeforeAll
     static void setUp() {
-        mathOperation = new StaticMathClass();
+        mathOperation = new StaticMathOperations();
     }
 
     @org.junit.jupiter.api.Test
