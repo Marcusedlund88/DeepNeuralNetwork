@@ -1,7 +1,6 @@
 version: '3.1'
 
 services:
-
   mongo:
     container_name: mongo
     image: mongo
@@ -14,6 +13,7 @@ services:
       - my-network
     volumes:
       - ./init-mongo-db-with-collections.js:/docker-entrypoint-initdb.d/init-mongo-db-with-collections.js:ro
+      - ./mydatabase.CaseTen.json:/docker-entrypoint-initdb.d/mydatabase.CaseTen.json:ro
 
   neuralnetwork:
     build:
